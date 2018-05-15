@@ -1,0 +1,15 @@
+*.class
+target/
+data 
+
+/bin/
+*.log 
+
+.classpath
+.project
+.settings/
+*/target/
+*/WEB_INF/
+
+
+*/.metadata/*
