@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.neorays</groupId>
+  <artifactId>Jersey1.xDemo</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Jersey1.xDemo Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+  <!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-json -->
+<dependency>
+    <groupId>com.sun.jersey</groupId>
+    <artifactId>jersey-json</artifactId>
+    <version>1.19.1</version>
+    <exclusions>
+    	<exclusion>
+    		<artifactId>jersey-core</artifactId>
+    		<groupId>com.sun.jersey</groupId>
+    	</exclusion>
+    	<exclusion>
+    		<artifactId>stax-api</artifactId>
+    		<groupId>javax.xml.stream</groupId>
+    	</exclusion>
+    	<exclusion>
+    		<artifactId>jaxb-api</artifactId>
+    		<groupId>javax.xml.bind</groupId>
+    	</exclusion>
+    	<exclusion>
+    		<artifactId>activation</artifactId>
+    		<groupId>javax.activation</groupId>
+    	</exclusion>
+    	<exclusion>
+    		<artifactId>jaxb-impl</artifactId>
+    		<groupId>com.sun.xml.bind</groupId>
+    	</exclusion>
+    </exclusions>
+</dependency>
+  
+<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-servlet -->
+<dependency>
+    <groupId>com.sun.jersey</groupId>
+    <artifactId>jersey-servlet</artifactId>
+    <version>1.19</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-client -->
+<dependency>
+    <groupId>com.sun.jersey</groupId>
+    <artifactId>jersey-client</artifactId>
+    <version>1.19.1</version>
+    <exclusions>
+    	<exclusion>
+    		<artifactId>jersey-core</artifactId>
+    		<groupId>com.sun.jersey</groupId>
+    	</exclusion>
+    </exclusions>
+</dependency>
+
+
+  </dependencies>
+  <build>
+    <finalName>Jersey1.xDemo</finalName>
+  </build>
+</project>
