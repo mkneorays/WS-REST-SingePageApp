@@ -1,0 +1,44 @@
+<web-app>
+  <display-name>RestEasy-Example</display-name>
+  <listener>
+    <listener-class>
+         org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap
+      </listener-class>
+  </listener>
+  <servlet>
+    <servlet-name>resteasy-servlet</servlet-name>
+    <servlet-class>
+            org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+        </servlet-class>
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>com.journaldev.jaxrs.resteasy.app.EmployeeApplication</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>resteasy-servlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+<!-- 
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>
+            org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher
+        </servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>com.journaldev.jaxrs.resteasy.app.EmployeeApplication</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+ -->
