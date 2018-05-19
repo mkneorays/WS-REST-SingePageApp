@@ -10,7 +10,7 @@
 		<init-param>
 			<!-- this init param value is mandetory in jersey 2.x -->
 			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>ind.neorays.service,com.fasterxml.jackson.jaxrs</param-value>
+			<param-value>ind.neorays.service</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
