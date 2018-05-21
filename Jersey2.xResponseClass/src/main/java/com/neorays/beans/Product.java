@@ -2,7 +2,6 @@ package com.neorays.beans;
 
 import java.io.Serializable;
 
-import javax.ws.rs.QueryParam;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -16,13 +15,10 @@ import javax.xml.bind.annotation.XmlType;
 public class Product implements Serializable {
 //	@XmlElement(name = "Id")
 	@XmlAttribute     //it become Product element attribute u can place multiple
-	@QueryParam("id") 
 	private int id;
 	@XmlElement(name = "Name")
-	@QueryParam("name")
 	private String name;
 	@XmlElement(name = "Price")
-	@QueryParam("price")
 	private long price;
 
 	
