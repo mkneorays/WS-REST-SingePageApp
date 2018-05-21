@@ -18,15 +18,16 @@ public class JerseyClientRestTemplateWithJavaObject {
 	public static void main(String[] args) {
 	   RestTemplate rs=null;
 	   
-	   String url="http://localhost:8091/Jersey2.xDemo/book/json";
 	   String url1="http://localhost:8091/Jersey2.xDemo/book/xml";
        String u="http://localhost:8091/Jersey2.xDemo1/webapi/textjson/jsonrest";
+		String url = "http//localhost:8091/Jersey2.xBeanParam/webapi/bean/json?id=123&name=www&price=0989767";
+
         Product p=new Product();
         p.setId(111);p.setName("xxxxx");
         p.setPrice(545345);
         rs=new RestTemplate();
-      //ResponseEntity<String> json=rs.getForEntity(u, String.class);
-       ResponseEntity<String> json=rs.postForEntity(u, p, String.class);
+      ResponseEntity<String> json=rs.getForEntity(url, String.class);
+      // ResponseEntity<String> json=rs.postForEntity(u, p, String.class);
                               //   System.out.println(rs.postForEntity(u, p, String.class));
        System.out.println(json);
 	   
