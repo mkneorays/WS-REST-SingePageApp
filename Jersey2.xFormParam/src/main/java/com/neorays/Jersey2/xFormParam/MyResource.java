@@ -41,3 +41,6 @@ public class MyResource {
     
     
 }//class
+
+//   http://localhost:8091/Jersey2.xFormParam/webapi/myresource/data     
+//  if u used postman then used form urlencoded to pass form data 
