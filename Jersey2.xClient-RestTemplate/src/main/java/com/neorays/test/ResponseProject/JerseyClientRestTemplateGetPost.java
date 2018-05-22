@@ -19,17 +19,23 @@ public class JerseyClientRestTemplateGetPost{
 	   RestTemplate rs=null;
 	   
 	   String url1="http://localhost:8091/Jersey2.xResponseClass/webapi/myresource";
-       String url2="http://localhost:8091/Jersey2.xResponseClass/webapi/myresource/json?id=111&name=www&price=2322";
-		String url3= "http://localhost:8091/Jersey2.xResponseClass/webapi/myresource/json1?id=111&name=www&price=2322";
+      String url2="http://localhost:8091/Jersey2.xResponseClass/webapi/myresource/json?{id}&{name}&{price}";
+      // String url2="http://localhost:8091/Jersey2.xResponseClass/webapi/myresource/json?id=111&name=www&price=2322";
+       String url5="http://localhost:8091/Jersey2.xResponseClass/webapi/myresource/xml/{id}/{name}/{price}";
+       String url3= "http://localhost:8091/Jersey2.xResponseClass/webapi/myresource/json1?id=111&name=www&price=2322";
      String url4="http://localhost:8091/Jersey2.xResponseClass/webapi/myresource/jsonxml?id=111&name=www&price=2322";
         Product p=new Product();
         p.setId(111);p.setName("xxxxx");
         p.setPrice(545345);
         rs=new RestTemplate();
-     //   ResponseEntity<String> json=rs.getForEntity(url1, String.class);
-     // ResponseEntity<String> json=rs.getForEntity(url2, String.class);
+        Map<String,Object> map=new HashMap();
+        map.put("id", "111");
+        map.put("name", "wwww");
+        map.put("price", "54321");
+   //  ResponseEntity<String> json=rs.getForEntity(url1, String.class);
+     ResponseEntity<String> json=rs.getForEntity(url5, String.class,map);
      //  ResponseEntity<String> json=rs.postForEntity(url3, p, String.class);
-       ResponseEntity<String> json=rs.postForEntity(url4, p, String.class);
+      // ResponseEntity<String> json=rs.postForEntity(url4, p, String.class);
 
        System.out.println(json);
 	   
