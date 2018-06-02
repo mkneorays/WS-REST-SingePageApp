@@ -1,0 +1,129 @@
+package com.journaldev.spring;
+
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.journaldev.beans.Person;
+import com.journaldev.beans.Person1;
+
+/**
+ * Handles requests for the application home page.
+ */
+@Controller
+@RequestMapping("/home")
+public class HomeController {
+		
+	@RequestMapping(value="/method0")
+	@ResponseBody
+	public String method0(){
+		System.out.println("method0");
+		return "method0";
+	}
+	
+	@RequestMapping(value={"/method1","/method1/second"})
+	@ResponseBody
+	public String method1(){
+		return "method1";
+	}
+	
+	@RequestMapping(value="/method2", method=RequestMethod.POST)
+	@ResponseBody
+	public String method2(){
+		return "method2";
+	}
+	
+	@RequestMapping(value="/method3", method={RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+	public String method3(){
+		return "method3";
+	}
+	
+	@RequestMapping(value="/method4", headers="name=pankaj")
+	@ResponseBody
+	public String method4(){
+		return "method4";
+	}
+	// http://localhost:4546/SpringMVC-RequestParam/home/method4
+	// name   pankaj
+	
+	@RequestMapping(value="/method5", headers={"name=pankaj", "id=1"})
+	@ResponseBody
+	public String method5(){
+		return "method5";
+	}
+	// http://localhost:4546/SpringMVC-RequestParam/home/method5
+	// name   pankaj
+	// id    1
+	
+	@RequestMapping(value="/method6", produces={"application/json","application/xml"}, consumes="text/html")
+	@ResponseBody
+	public String method6(){
+		return "method6";
+	}
+	// http://localhost:4546/SpringMVC-RequestParam/home/method6
+	// Content-Type   text/html
+	// Accept     application/xml
+	//  Accept           application/json
+	
+	@RequestMapping(value="/method7/{id}")
+	@ResponseBody
+	public String method7(@PathVariable("id") int id){
+		return "method7 with id="+id;
+	}
+	//http://localhost:4546/SpringMVC-RequestParam/home/method7/1
+	
+	@RequestMapping(value="/method8/{id:[\\d]+}/{name}")
+	@ResponseBody
+	public String method8(@PathVariable("id") long id, @PathVariable("name") String name){
+		return "method8 with id= "+id+" and name="+name;
+	}
+	//http://localhost:4546/SpringMVC-RequestParam/home/method8/10/Lisa
+	
+	@RequestMapping(value="/method9")
+	@ResponseBody
+	public String method9(@RequestParam("id") int id){
+		System.out.println("method9");
+		return "method9 with id= "+id;
+	}
+	//http://localhost:4546/SpringMVC-RequestParam/home/method9?id=20
+	
+	 @ResponseBody       //not working
+	    @RequestMapping(value = "/method10", method = RequestMethod.GET)
+	  public String method10(@RequestBody Person1 person){
+		System.out.println("method10 "+person);
+		return "default method";
+	}
+	 
+	 @ResponseBody    //not working
+	    @RequestMapping(value = "/method11" , headers = {
+	            "content-type=application/json" }, method = RequestMethod.POST)
+	  public String method11(@RequestBody Person1 person){
+		System.out.println("method10 "+person);
+		return "default method";
+	}
+	
+	//@RequestMapping default method: If value is empty for a method, it works as default method for the controller class.
+	@RequestMapping()
+	@ResponseBody
+	public String defaultMethod(){
+		System.out.println("defaultMethod");
+		return "default method";
+	}
+	
+	/*@RequestMapping fallback method: We can create a fallback method for the controller class to
+	make sure we are catching all the client requests even though there are no matching handler methods.
+	It is useful in sending custom 404 response pages to users when there are no handler methods for the request.
+	*/
+	@RequestMapping("*")
+	@ResponseBody
+	public String fallbackMethod(){
+		System.out.println("fallback method");
+		return "fallback method";
+	}
+}
