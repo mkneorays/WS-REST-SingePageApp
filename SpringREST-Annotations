@@ -1,0 +1,373 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.itcs</groupId>
+	<artifactId>SpringAnnotations</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>SpringAnnotations Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<!-- <dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>4.3.9.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+	</dependencies> -->
+	<properties>
+        <springframework.version>4.2.0.RELEASE</springframework.version>
+        <jackson.version>2.5.3</jackson.version>
+    </properties>
+ 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
+ 
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+             
+    </dependencies>
+	<build>
+		<finalName>SpringAnnotations</finalName>
+	</build>
+</project>
+-------------------------------------
+
+package com.itcs.bean;
+
+public class Person {
+
+	private int id;
+	private String name;
+	private String add;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAdd() {
+		return add;
+	}
+
+	public void setAdd(String add) {
+		this.add = add;
+	}
+
+	@Override
+	public String toString() {
+		return "Person [id=" + id + ", name=" + name + ", add=" + add + "]";
+	}
+
+}
+-----------------------------------------------
+package com.itcs.cnfgs;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+@Configuration
+@ComponentScan(basePackages = "com.itcs.controller")
+@EnableWebMvc
+public class ApplicationConfig {
+
+	// @Bean
+	public InternalResourceViewResolver viewResolver() {
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setPrefix("/WEB-INF/jsp/");
+		resolver.setSuffix(".jsp");
+		return resolver;
+	}// method
+
+}// class
+------------------------------------------------------------
+package com.itcs.cnfgs;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+
+import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
+
+public class ApplicationInitializer implements WebApplicationInitializer {
+
+	public void onStartup(ServletContext container) throws ServletException {
+
+		AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+		ctx.register(ApplicationConfig.class);
+		ctx.setServletContext(container);
+
+		ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
+
+		servlet.setLoadOnStartup(1);
+		servlet.addMapping("/");
+	}
+
+}
+-----------------------------------------------------------------------
+ package com.itcs.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.itcs.bean.Person;
+
+
+
+/**
+ * Handles requests for the application home page.
+ */
+@Controller
+@RequestMapping("/home")
+public class HomeController {
+		
+	@RequestMapping(value="/method0")
+	@ResponseBody
+	public String method0(){
+		System.out.println("method0");
+		return "method0";
+	}
+	
+	@RequestMapping(value={"/method1","/method1/second"})
+	@ResponseBody
+	public String method1(){
+		return "method1";
+	}
+	
+	@RequestMapping(value="/method2", method=RequestMethod.POST)
+	@ResponseBody
+	public String method2(){
+		return "method2";
+	}
+	
+	@RequestMapping(value="/method3", method={RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+	public String method3(){
+		return "method3";
+	}
+	
+	@RequestMapping(value="/method4", headers="name=pankaj")
+	@ResponseBody
+	public String method4(){
+		return "method4";
+	}
+	// http://localhost:4546/SpringMVC-RequestParam/home/method4
+	// name   pankaj
+	
+	@RequestMapping(value="/method5", headers={"name=pankaj", "id=1"})
+	@ResponseBody
+	public String method5(){
+		return "method5";
+	}
+	// http://localhost:4546/SpringMVC-RequestParam/home/method5
+	// name   pankaj
+	// id    1
+	
+	@RequestMapping(value="/method6", produces={"application/json","application/xml"}, consumes="text/html")
+	@ResponseBody
+	public String method6(){
+		return "method6";
+	}
+	// http://localhost:4546/SpringMVC-RequestParam/home/method6
+	// Content-Type   text/html
+	// Accept     application/xml
+	//  Accept           application/json
+	
+	@RequestMapping(value="/method7/{id}")
+	@ResponseBody
+	public String method7(@PathVariable("id") int id){
+		return "method7 with id="+id;
+	}
+	//http://localhost:4546/SpringMVC-RequestParam/home/method7/1
+	
+	@RequestMapping(value="/method8/{id:[\\d]+}/{name}")
+	@ResponseBody
+	public String method8(@PathVariable("id") long id, @PathVariable("name") String name){
+		return "method8 with id= "+id+" and name="+name;
+	}
+	//http://localhost:4546/SpringMVC-RequestParam/home/method8/10/Lisa
+	
+	@RequestMapping(value="/method9")
+	@ResponseBody
+	public String method9(@RequestParam("id") int id){
+		System.out.println("method9");
+		return "method9 with id= "+id;
+	}
+	//http://localhost:4546/SpringMVC-RequestParam/home/method9?id=20
+	
+	 @ResponseBody      
+	    @RequestMapping(value = "/method10", method = RequestMethod.POST)
+	  public Person method10(@RequestBody Person person){
+		System.out.println("method10 "+person);
+		return person;
+	}
+	  //  http://localhost:8080/SpringAnnotations/home/method10
+	 //    key              value
+	 //   Content-Type    application/json    for consumes purpose
+	//  inside row
+	/*//{
+	    "id": 1234,
+	    "name": "wwww",
+	    "add": "qqqxx"
+	}*/
+	 
+	 
+	 @ResponseBody   
+	    @RequestMapping(value = "/method11" , headers = {
+	            "content-type=application/json" }, method = RequestMethod.POST)
+	  public Person method11(@RequestBody Person person){
+		System.out.println("method11 "+person);
+		return person;
+	}
+	
+	 //  http://localhost:8080/SpringAnnotations/home/method11
+	 //    key              value
+	 //   Content-Type    application/json    for consumes purpose
+	//  inside row
+	/*//{
+	    "id": 1234,
+	    "name": "wwww",
+	    "add": "qqqxx"
+	}*/
+	 @ResponseBody    
+	    @RequestMapping(value = "/method12" , method = RequestMethod.POST)
+	  public Person method12(@ModelAttribute Person person){
+		System.out.println("method12 "+person);
+		return person;
+	}
+	 
+	 // http://localhost:8080/SpringAnnotations/home/method12
+	 //  x-www-form-url-encoded
+	 //  id    123
+	 // name   www
+	 // add    wwww
+	  
+	 
+	 
+	 
+	 
+	 @ResponseBody   
+	    @RequestMapping(value = "/method13" , headers = {
+	            "content-type=application/json" }, method = RequestMethod.POST, produces="application/json")
+	  public Person method13(@RequestBody Person person,@CookieValue(value = "hitCounter", defaultValue = "1234567") Long cookie){
+		System.out.println("COOKIE ="+cookie +" method13 "+person);
+		
+		
+		return person;
+	}
+	 
+	 //  http://localhost:8080/SpringAnnotations/home/method13
+	 //    key              value
+	 //   Content-Type    application/json    for consumes purpose
+	//  inside row
+	/*//{
+	    "id": 1234,
+	    "name": "wwww",
+	    "add": "qqqxx"
+	}*/
+	 
+	 @ResponseBody   
+	    @RequestMapping(value = "/method14" , headers = {
+	            "content-type=application/json" }, method = RequestMethod.POST, produces="application/json")
+	  public ResponseEntity<List<Person>>  method14(@RequestBody Person person){
+		System.out.println(" method14 "+person);
+		List list=new ArrayList<Person>();
+		Person p=new Person();
+		p.setId(123);
+		p.setName("suresh");
+		p.setAdd("hyd");
+		Person p1=new Person();
+		p1.setId(111);
+		p1.setName("mithu");
+		p1.setAdd("bnglor");
+		list.add(p1);
+		list.add(p);
+		System.out.println(list);
+		
+		  return new ResponseEntity<List<Person>>(list, HttpStatus.OK);
+	}
+	
+	 //  http://localhost:8080/SpringAnnotations/home/method14
+	 //    key              value
+	 //   Content-Type    application/json    for consumes purpose
+	//  inside row
+	/*//{
+	    "id": 1234,
+	    "name": "wwww",
+	    "add": "qqqxx"
+	}*/
+	
+	 
+	//@RequestMapping default method: If value is empty for a method, it works as default method for the controller class.
+	@RequestMapping()
+	@ResponseBody
+	public String defaultMethod(){
+		System.out.println("defaultMethod");
+		return "default method";
+	}
+	
+	/*@RequestMapping fallback method: We can create a fallback method for the controller class to
+	make sure we are catching all the client requests even though there are no matching handler methods.
+	It is useful in sending custom 404 response pages to users when there are no handler methods for the request.
+	*/
+	@RequestMapping("*")
+	@ResponseBody
+	public String fallbackMethod(){
+		System.out.println("fallback method");
+		return "fallback method";
+	}
+}
+---------------------------------------------------------------------
