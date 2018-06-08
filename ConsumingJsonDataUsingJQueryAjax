@@ -12,6 +12,11 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
 $(document).ready(function(){
+//for disabling back button
+ window.history.pushState(null, "", window.location.href);        
+     window.onpopstate = function() {
+         window.history.pushState(null, "", window.location.href);
+     };
     $("#single").click(function(){
         $.ajax({url: "https://reqres.in/api/users/2", success: function(result){
         	console.log(result);
