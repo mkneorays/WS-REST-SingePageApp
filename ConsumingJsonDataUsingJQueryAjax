@@ -1,0 +1,146 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+	<%@ page isELIgnored="false" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("#single").click(function(){
+        $.ajax({url: "https://reqres.in/api/users/2", success: function(result){
+        	console.log(result);
+            $('#a1').html( result.data.id );
+            $('#a2').html(result.data.first_name);
+            $('#a3').append( result.data.last_name);
+           // $('#a4').html(result.data.avatar);
+            var img = $('<img id="qq">'); 
+            img.attr('src', result.data.avatar);
+            img.appendTo('#a4');
+        }});
+    });
+});
+/* $(document).ready(function(){ 
+	 $("#multiple").click(function(){
+		  $.ajax({url: "https://reqres.in/api/users/", success: function(results){
+			  console.log(results);
+			  $.each(results.data, function(i, result) {
+				  $('#result').append('<li> Id :' + result.id
+			        		+ ' , First Name :'
+			        		+ result.first_name
+			        		+ ' , Last Name :'
+			        		+ result.last_name
+			        		+' , Avatar  :'
+			        		+ result.avatar
+			        		+' </li>');
+			  });
+		  }});
+	 });
+}); */
+$(document).ready(function(){ 
+	$("#hide").hide();
+	
+	 $("#multiple").click(function(){
+		 $("#hide").show();
+		  $.ajax({url: "https://reqres.in/api/users/", success: function(data){
+			  console.log(data);
+			  document.getElementById("id").innerHTML = data.data[0].id;
+			  document.getElementById("first_name").innerHTML = data.data[0].first_name;
+			  document.getElementById("last_name").innerHTML = data.data[0].last_name;
+			  //document.getElementById("avatar").innerHTML = data.data[0].avatar;
+			   var img = $('<img>'); 
+              img.attr('src', data.data[0].avatar);
+              img.appendTo('#avatar');
+            
+			  document.getElementById("id1").innerHTML = data.data[1].id;
+			  document.getElementById("first_name1").innerHTML = data.data[1].first_name;
+			  document.getElementById("last_name1").innerHTML = data.data[1].last_name;
+			  //document.getElementById("avatar1").innerHTML = data.data[1].avatar;
+			  var img = $('<img>'); 
+              img.attr('src', data.data[0].avatar);
+              img.appendTo('#avatar1');
+			  
+			  document.getElementById("id2").innerHTML = data.data[2].id;
+			  document.getElementById("first_name2").innerHTML = data.data[2].first_name;
+			  document.getElementById("last_name2").innerHTML = data.data[2].last_name;
+			 // document.getElementById("avatar2").innerHTML = data.data[2].avatar;
+			  var img = $('<img id="dynamic">'); 
+              img.attr('src', data.data[0].avatar);
+              img.appendTo('#avatar2');
+		  }});
+	 });
+});
+
+
+</script>
+</head>
+<body>
+<div class="container">
+	<h1 style="text-align: center;">Fetching JSON Data from External Services</h1>
+	
+
+	<button id="single">Single Record</button><br><br>
+	<table class="table">
+  <tr class="active">
+    <th>STATIC DATA</th>
+    <th>DYNAMIC DATA</th>
+  </tr>
+  <tr class="success">
+    <td>ID</td>
+    <td id="a1"></td>
+  </tr>
+  <tr class="danger">
+    <td>FirstName</td>
+    <td id="a2"></td>
+  </tr >
+   <tr class="info">
+    <td>LastName</td>
+    <td id="a3"></td>
+  </tr>
+   <tr class="warning">
+    <td>AVATAR</td>
+    <td id="a4"></td>
+  </tr>
+</table>
+	</div>
+      <br><br><br>
+       <div class="container">  
+      <button id="multiple">Multiple Record</button><br><br>
+  <table class="table table-bordered" id="hide">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>FirstName</th>
+        <th>LastName</th>
+         <th>AVATAR</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="id"></td>
+        <td id="first_name"></td>
+        <td id="last_name"></td>
+         <td id="avatar"></td>
+      </tr>
+      <tr>
+        <td id="id1"></td>
+        <td id="first_name1"></td>
+        <td id="last_name1"></td>
+         <td id="avatar1"></td>
+      </tr>
+       <tr>
+        <td id="id2"></td>
+        <td id="first_name2"></td>
+        <td id="last_name2"></td>
+         <td id="avatar2"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
