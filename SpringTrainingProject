@@ -1,0 +1,950 @@
+package com.itcs.beans;
+public class Person {
+	 
+    
+    private String name;
+    private String email;
+    private String username;
+    private String password;
+    private int age;
+    private String address;
+    private String Occupation;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getOccupation() {
+		return Occupation;
+	}
+	public void setOccupation(String occupation) {
+		Occupation = occupation;
+	}
+	@Override
+	public String toString() {
+		return "Person [name=" + name + ", email=" + email + ", username=" + username + ", password=" + password
+				+ ", age=" + age + ", address=" + address + ", Occupation=" + Occupation + "]";
+	}
+	
+	
+}
+----------------------------------------------------------------------------------------------------------------
+ package com.itcs.beans;
+
+ public class UserData {
+	  private String nickName;
+	    private String semail;
+	    private long mobile;
+	    private String job;
+		public String getNickName() {
+			return nickName;
+		}
+		public void setNickName(String nickName) {
+			this.nickName = nickName;
+		}
+		public String getSemail() {
+			return semail;
+		}
+		public void setSemail(String semail) {
+			this.semail = semail;
+		}
+		public long getMobile() {
+			return mobile;
+		}
+		public void setMobile(long mobile) {
+			this.mobile = mobile;
+		}
+		public String getJob() {
+			return job;
+		}
+		public void setJob(String job) {
+			this.job = job;
+		}
+		@Override
+		public String toString() {
+			return "UserData [nickName=" + nickName + ", semail=" + semail + ", mobile=" + mobile + ", job=" + job
+					+ "]";
+		}
+	    
+}
+------------------------------------------------------------------------------------------------------------------
+package com.itcs.controller;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import org.springframework.web.bind.annotation.SessionAttributes;
+
+import com.itcs.beans.Person;
+import com.itcs.beans.UserData;
+
+@Controller
+@SessionAttributes(names = { "person", "userdata" })
+public class LoginController {
+
+	@ModelAttribute("person")
+	public Person sessionPage() {
+		System.out.println("sessionPage method");
+		return new Person();
+
+	}// method
+	@ModelAttribute("userdata")
+	public UserData session1Page() {
+		System.out.println("sessionPage method");
+		return new UserData();
+
+	}// method
+
+	@RequestMapping("/home.htm")
+	public String homePage() {
+		System.out.println("home method");
+
+		return "home";
+
+	}// method
+
+	@RequestMapping("/login.htm")
+	public String login(@RequestParam("user") String user, @RequestParam String pwd) {
+		System.out.println("login method  " + user + "  " + pwd);
+
+		return "form1";
+
+	}// method
+
+	@RequestMapping("/form1.htm")
+	public String form1Method(Model map, @ModelAttribute("person") Person person) {
+		System.out.println("form1Method method  " + person);
+		
+		map.addAttribute("form1", person);
+		return "form2";
+
+	}// method
+
+	@RequestMapping("/form2.htm")
+	public String form2Method(Model map, @ModelAttribute("person") Person person) {
+		System.out.println("form2Method method  " + person);
+		map.addAttribute("form2", person);
+		return "form3";
+
+	}// method
+
+	@RequestMapping("/form3.htm")
+	public String form3Method( Model map, @ModelAttribute("userdata") UserData userdata,HttpSession ses ) {
+		Person p=(Person) ses.getAttribute("person");
+		System.out.println("form3Method method  " + userdata+"   =="+p);
+		
+		map.addAttribute("form3", userdata);
+		map.addAttribute("form", p);
+		return "form4";
+
+	}// method
+}// class
+--------------------------------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring.xml</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+</web-app>
+---------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="com.itcs.controller" />
+
+
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<!-- <resources mapping="/resources/**" location="/resources/" /> -->
+	<!-- <mvc:resources mapping="/static/**" location="/WEB-INF/static/" /> -->
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<!-- <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver"> 
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" 
+		/> <property name="prefix" value="/WEB-INF/views/" /> <property name="suffix" 
+		value=".html" /> </bean> -->
+
+</beans>
+-------------------------------------------------------------------------------------------------------
+<html>
+<head>
+<link
+	href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
+<script
+	src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+<!------ Include the above in your HEAD tag ---------->
+<body>
+<div class="container">
+	<div id="loginbox" style="margin-top: 50px;"
+		class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<div class="panel-title">Sign In</div>
+				<div
+					style="float: right; font-size: 80%; position: relative; top: -10px">
+					<a  class="text-info" href="#">Forgot password?</a>
+				</div>
+			</div>
+
+			<div style="padding-top: 30px" class="panel-body">
+
+				<div style="display: none" id="login-alert"
+					class="alert alert-danger col-sm-12"></div>
+
+				<form method="post" class="form-horizontal" role="form" action="login.htm">
+
+					<div style="margin-bottom: 25px" class="input-group">
+						<span class="input-group-addon"><i
+							class="glyphicon glyphicon-user"></i></span> <input id="login-username"
+							type="text" class="form-control" name="user" 
+							placeholder="username or email">
+					</div>
+
+					<div style="margin-bottom: 25px" class="input-group">
+						<span class="input-group-addon"><i
+							class="glyphicon glyphicon-lock"></i></span> <input id="login-password"
+							type="password" class="form-control" name="pwd"
+							placeholder="password">
+					</div>
+
+                  <!--    <p class="text-muted">...</p> //grey
+<p class="text-primary">...</p> //light blue
+<p class="text-success">...</p> //green
+<p class="text-info">...</p> //blue
+<p class="text-warning">...</p> //orangish,yellow
+<p class="text-danger">...</p> //red -->
+
+					<div class="input-group">
+						<div class="checkbox">
+							<label> <input id="login-remember" type="checkbox"
+								name="remember" value="1"> Remember me
+							</label>
+						</div>
+					</div>
+
+
+					<div style="margin-top: 10px" class="form-group">
+						<!-- Button -->
+
+						<div class="col-sm-12 controls">
+						<button  class="btn btn-success">Login</button>
+							<!-- <a id="btn-login" href="#" class="btn btn-success">Login </a>  -->
+							<!-- <a id="btn-fblogin" href="#" class="btn btn-primary">Login with
+								Facebook</a> -->
+
+						</div>
+					</div>
+
+
+					<div class="form-group">
+						<div class="col-md-12 control">
+							<div
+								style="border-top: 1px solid #888; padding-top: 15px; font-size: 85%">
+								Don't have an account! <a href="#" onClick="$('#loginbox').hide(); $('#signupbox').show()"> 
+									Sign Up Here </a>
+									<!-- onClick="$('#loginbox').hide(); $('#signupbox').show()"-->
+							</div>
+						</div>
+					</div>
+				</form>
+
+
+
+			</div>
+		</div>
+	</div>
+	<div id="signupbox" style="display: none; margin-top: 50px"
+		class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				<div class="panel-title">Sign Up</div>
+				<div
+					style="float: right; font-size: 85%; position: relative; top: -10px">
+					<a id="signinlink" href="#"
+						onclick="$('#signupbox').hide(); $('#loginbox').show()">Sign
+						In</a>
+				</div>
+			</div>
+			<div class="panel-body">
+				<form id="signupform" class="form-horizontal" role="form">
+
+					<div id="signupalert" style="display: none"
+						class="alert alert-danger">
+						<p>Error:</p>
+						<span></span>
+					</div>
+
+
+
+					<div class="form-group">
+						<label for="email" class="col-md-3 control-label">Email</label>
+						<div class="col-md-9">
+							<input type="text" class="form-control" name="email"
+								placeholder="Email Address">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="firstname" class="col-md-3 control-label">First
+							Name</label>
+						<div class="col-md-9">
+							<input type="text" class="form-control" name="firstname"
+								placeholder="First Name">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="lastname" class="col-md-3 control-label">Last
+							Name</label>
+						<div class="col-md-9">
+							<input type="text" class="form-control" name="lastname"
+								placeholder="Last Name">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="password" class="col-md-3 control-label">Password</label>
+						<div class="col-md-9">
+							<input type="password" class="form-control" name="passwd"
+								placeholder="Password">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="icode" class="col-md-3 control-label">Invitation
+							Code</label>
+						<div class="col-md-9">
+							<input type="text" class="form-control" name="icode"
+								placeholder="">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<!-- Button -->
+						<div class="col-md-offset-3 col-md-9">
+							<button id="btn-signup" type="button" class="btn btn-info">
+								<i class="icon-hand-right"></i> &nbsp Sign Up
+							</button>
+						</div>
+					</div>
+
+					 
+                               <!--  <div style="border-top: 1px solid #999; padding-top:20px"  class="form-group">
+                                    
+                                    <div class="col-md-offset-3 col-md-9">
+                                        <button id="btn-fbsignup" type="button" class="btn btn-primary"><i class="icon-facebook"></i>   Sign Up with Facebook</button>
+                                    </div>                                           
+                                        
+                                </div> -->
+
+
+
+				</form>
+			</div>
+		</div>
+
+
+
+
+	</div>
+</div>
+</body>
+</html>
+-------------------------------------------------------------------------------------------------
+form1.jsp
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head> 
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  /*
+/* Created by Filipe Pina
+ * Specific styles of signin, register, component
+ */
+/*
+ * General styles
+ */
+#playground-container {
+    height: 500px;
+    overflow: hidden !important;
+    -webkit-overflow-scrolling: touch;
+}
+body, html{
+     height: 100%;
+ 	background-repeat: no-repeat;
+ 	background:url(https://i.ytimg.com/vi/4kfXjatgeEU/maxresdefault.jpg);
+ 	font-family: 'Oxygen', sans-serif;
+	    background-size: cover;
+}
+
+.main{
+ 	margin:50px 15px;
+}
+
+h1.title { 
+	font-size: 50px;
+	font-family: 'Passion One', cursive; 
+	font-weight: 400; 
+}
+
+hr{
+	width: 10%;
+	color: #fff;
+}
+
+.form-group{
+	margin-bottom: 15px;
+}
+
+label{
+	margin-bottom: 15px;
+}
+
+input,
+input::-webkit-input-placeholder {
+    font-size: 11px;
+    padding-top: 3px;
+}
+
+.main-login{
+ 	background-color: #fff;
+    /* shadows and rounded borders */
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+
+}
+.form-control {
+    height: auto!important;
+padding: 8px 12px !important;
+}
+.input-group {
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+    -moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+}
+#button {
+    border: 1px solid #ccc;
+    margin-top: 28px;
+    padding: 6px 12px;
+    color: #666;
+    text-shadow: 0 1px #fff;
+    cursor: pointer;
+    -moz-border-radius: 3px 3px;
+    -webkit-border-radius: 3px 3px;
+    border-radius: 3px 3px;
+    -moz-box-shadow: 0 1px #fff inset, 0 1px #ddd;
+    -webkit-box-shadow: 0 1px #fff inset, 0 1px #ddd;
+    box-shadow: 0 1px #fff inset, 0 1px #ddd;
+    background: #f5f5f5;
+    background: -moz-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f5f5f5), color-stop(100%, #eeeeee));
+    background: -webkit-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+    background: -o-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+    background: -ms-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+    background: linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#eeeeee', GradientType=0);
+}
+.main-center{
+ 	margin-top: 30px;
+ 	margin: 0 auto;
+ 	max-width: 400px;
+    padding: 10px 40px;
+	background:#009edf;
+	    color: #FFF;
+    text-shadow: none;
+	-webkit-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
+-moz-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
+box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
+
+}
+span.input-group-addon i {
+    color: #009edf;
+    font-size: 17px;
+}
+
+.login-button{
+	margin-top: 5px;
+}
+
+.login-register{
+	font-size: 11px;
+	text-align: center;
+}
+  
+  </style>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+		<!-- Website CSS style -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+
+		<!-- Website Font style -->
+	    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+		<link rel="stylesheet" href="style.css">
+		<!-- Google Fonts -->
+		<link href='https://fonts.googleapis.com/css?family=Passion+One' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
+
+		<title>Admin</title>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row main">
+				<div class="main-login main-center">
+				<h5 style="color: yellow"><b>Registration Form 1</b></h5>
+					<form class="" method="post" action="form1.htm">
+						
+						<div class="form-group">
+							<label for="name" class="cols-sm-2 control-label">Your Name</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="name" id="name"  placeholder="Enter your Name"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="email" class="cols-sm-2 control-label">Your Email</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="email" id="email"  placeholder="Enter your Email"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="username" class="cols-sm-2 control-label">Username</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+									<input type="text" class="form-control" name="username" id="username"  placeholder="Enter your Username"/>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="password" class="cols-sm-2 control-label">Password</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="password" class="form-control" name="password" id="password"  placeholder="Enter your Password"/>
+								</div>
+							</div>
+						</div>
+
+						<!-- <div class="form-group">
+							<label for="confirm" class="cols-sm-2 control-label">Confirm Password</label>
+							<div class="cols-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+									<input type="password" class="form-control" name="confirm" id="confirm"  placeholder="Confirm your Password"/>
+								</div>
+							</div>
+						</div> -->
+
+						<div class="form-group ">
+							<!-- <a href="https://ccp.cloudaccess.net/aff.php?aff=5188" target="_blank" type="button" id="button" class="btn btn-primary btn-lg btn-block login-button">Submit</a> -->
+						<!-- <a href="https://ccp.cloudaccess.net/aff.php?aff=5188" target="_blank" type="button" id="button" class="btn btn-primary "><b>Submit</b></a> -->
+						<input type="submit" value="Submit" class="btn btn-primary " style="text-align: left;">
+						<span class="pull-right"><input type="reset" value="Reset" class="btn btn-success " ></span>
+						</div>
+						
+					</form>
+				</div>
+			</div>
+		</div>
+
+		 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+	</body>
+</html>
+----------------------------------------------------------------------------------------------------------------------
+form2.jsp
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@page isELIgnored="false"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>form2</title>
+<link
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
+<script
+	src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<style type="text/css">
+.modal-content {
+	position: relative;
+	background-color: #ffffff;
+	border: 1px solid #999999;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 0;
+	outline: none;
+	-webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+	background-clip: padding-box;
+}
+
+.modal-header {
+	border-bottom: 1px solid #48a4ac;
+	background: #61bdc5;
+	min-height: 16.4286px;
+	padding: 10px 15px;
+}
+
+.close {
+	float: right;
+	font-size: 21px;
+	font-weight: 700;
+	line-height: 1;
+	color: #000;
+	text-shadow: 0 1px 0 #fff;
+	opacity: .2;
+	filter: alpha(opacity = 20);
+}
+
+.modal-body {
+	position: relative;
+	padding: 20px;
+}
+
+.modal-footer {
+	padding: 19px 20px 20px;
+	margin-top: 0;
+	text-align: right;
+	border-top: 1px solid #e5e5e5;
+}
+</style>
+</head>
+<body>
+
+	<div class="container">
+	<div class="row main">
+			<div class="modal-content">
+				<div class="main-login main-center">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">
+							<i class="fa fa-times"></i>
+						</button>
+						<!-- <h4 class="modal-title">Ready to Join? Create a New Account</h4> -->
+						<h5 style="color: yellow">
+							<b>Registration Form 2</b>
+						</h5>
+					</div>
+
+					<form action="form2.htm" method="post">
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="userEmail">Age </label> <input type="text"
+									class="form-control" required="" name="age" >
+								<!-- <span class="help-block">Your email address is also used to log in.</span> -->
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="password">Address</label> <input type="password"
+											class="form-control" required="" name="address">
+										<!-- <span class="help-block">Choose a password for your new account.</span> -->
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label for="passwordr">Occupation </label> <input
+											type="password" class="form-control" 
+											name="Occupation" >
+										<!-- <span class="help-block">Type the password again. Passwords must match.</span> -->
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="modal-footer">
+								<span class="pull-left"><button type="input" name="submit" class="btn btn-success btn-icon"> Prevoius</button></span>
+								<button type="submit" class="btn btn-default btn-icon" data-dismiss="modal"> Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+Form1 Data==${form1}
+
+----------------------------------------------------------------------------------------------------------
+form3.jsp 
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@page isELIgnored="false"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>form3</title>
+<style>
+.divider-text {
+    position: relative;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.divider-text span {
+    padding: 7px;
+    font-size: 12px;
+    position: relative;   
+    z-index: 2;
+}
+.divider-text:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    top: 55%;
+    left: 0;
+    z-index: 1;
+}
+
+.btn-facebook {
+    background-color: #405D9D;
+    color: #fff;
+}
+.btn-twitter {
+    background-color: #42AEEC;
+    color: #fff;
+}
+</style>
+<link
+	href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	rel="stylesheet" id="bootstrap-css">
+<script
+	src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script
+	src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+
+	<link rel="stylesheet"
+		href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+
+
+	<div class="container">
+		<br>
+		<p class="text-center">
+			<a
+				href="http://bootstrap-ecommerce.com/"></a>
+		</p>
+	
+
+
+
+
+
+		<div class="card bg-light">
+			<article class="card-body mx-auto" style="max-width: 400px;">
+			<h4 class="card-title mt-3 text-center">Registration From 3</h4>
+			<!-- <p class="text-center">Get started with your free account</p><p>
+				<a href="" class="btn btn-block btn-twitter"> <i
+					class="fab fa-twitter"></i>   Login via Twitter
+				</a> <a href="" class="btn btn-block btn-facebook"> <i
+					class="fab fa-facebook-f"></i>   Login via facebook
+				</a>
+			</p> -->
+			<hr size="30">
+			
+			<form method="post" action="form3.htm">
+				<div class="form-group input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text"> <i class="fa fa-user"></i>
+						</span>
+					</div>
+					<input name="nickName" class="form-control" placeholder="Nick name"
+						type="text">
+				</div>
+				<!-- form-group// -->
+				<div class="form-group input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text"> <i class="fa fa-envelope"></i>
+						</span>
+					</div>
+					<input name="semail" class="form-control" placeholder="Secondery Email address"
+						type="email">
+				</div>
+				<!-- form-group// -->
+				<div class="form-group input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text"> <i class="fa fa-phone"></i>
+						</span>
+					</div>
+					<select class="custom-select" style="max-width: 120px;">
+						<option selected="">+91</option>
+						<option value="1">+92</option>
+						<option value="2">+18</option>
+						<option value="3">+701</option>
+					</select> <input name="mobile" class="form-control" placeholder="Phone number"
+						type="text">
+				</div>
+				<!-- form-group// -->
+				<div class="form-group input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text"> <i class="fa fa-building"></i>
+						</span>
+					</div>
+					<select class="form-control" name="job">
+						<option selected="">Select job type</option>
+						<option>Web Developer</option>
+						<option>Manager</option>
+						<option>Software Engineer</option>
+						<option>Hardware Engineer</option>
+					</select>
+				</div>
+				<!-- form-group end.// 
+				<div class="form-group input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text"> <i class="fa fa-lock"></i>
+						</span>
+					</div>
+					<input class="form-control" placeholder="Create password"
+						type="password">
+				</div>-->
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-block">
+						Previous </button>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-block">
+						Submit </button>
+				</div>
+				<!-- form-group// 
+				<p class="text-center">
+					Have an account? <a href="">Log In</a>
+				</p>-->
+			</form>
+			</article>
+		</div>
+		<!-- card.// -->
+
+	</div>
+	<!--container end.//-->
+
+	<br>
+	<br>
+	<article class="bg-secondary mb-3">
+	<div class="card-body text-center">
+		<h3 class="text-white mt-3">ITCS  Contractors</h3>
+		<p class="h5 text-white">
+			Able Intrnate Payroll<br> E-Filling Ready,
+			Aexchange
+		</p>
+		<br>
+		
+	</div>
+	<br>
+	<br>
+	</article>
+
+</body>
+</html>
+Form1 Data==${form1}
+
+<br>
+Form2 Data==${form2}
+
+
+------------------------------------------------------------------------------------------------------------
+form4.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@page isELIgnored="false"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+Form1 Data==${form1}
+<br>
+Form2 Data==${form2}<br>
+Form3 Data==${form3}<br>
+Login User=${user}<br>
+Login Pwd=${pwd}<br>
+Form Data==${form}<br>
+</body>
+</html>
