@@ -1,111 +1,114 @@
+package com.itcs.beans;
+
+import java.util.Date;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.itsc.custom.validator.Phone;
 
 
-person_error.properties
 
-# person beans class error
-p_name.length=Name should be atleast five alphabets
-p_email.length=Please pass five character
-p_username.length=Username should be 5 digits
-p_password.length=Password should be 5 digits
+public class Customer {
+	@NotEmpty
+	@Size(min = 2, max = 30)
+	private String name;
+	
+	@Email
+	//@NotNull  // it wont pass any default msg on string datatype only int will work
+	@NotEmpty
+	private String email;
+	@NotNull
+	@Min(18)
+	@Max(100)
+	private Integer age;
+	@NotEmpty
+	private String gender;
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@NotNull
+	@Past
+	private Date birthday;
+	@Phone
+	//@NotEmpty
+	private String phone;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public Integer getAge() {
+		return age;
+	}
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public Date getBirthday() {
+		return birthday;
+	}
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	@Override
+	public String toString() {
+		return "Customer [name=" + name + ", email=" + email + ", age=" + age + ", gender=" + gender + ", birthday="
+				+ birthday + ", phone=" + phone + "]";
+	}
 
-p_age.length=Age must be greater then 15 @ less then 100
-p_address.length=Address should be 5 digits
-p_Occupation.length=Occupation should be 5 digits
-
-# UserData beans class error
-mobile.length=Mobile should be 10 digits
-name.length=Name should be atleast five alphabets
-email.length=Please pass five character
-#job.length=Occupation should be 5 digits
-
-----------------------------------------------------------------------------------
-package com.itcs.validator;
-
-import java.util.regex.Pattern;
-
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
-
-import com.itcs.beans.Person;
-import com.itcs.beans.UserData;
-
-public class UserDataValidator implements Validator {
-
-	public boolean supports(Class<?> clazz) {
-		return clazz.isAssignableFrom(UserData.class);
-	}//supports method
-
-	public void validate(Object command, Errors errors) {
-		UserData p=(UserData) command;
-		int length = String.valueOf(p.getMobile()).length(); //10
-		//if(!Pattern.matches("^\\d{10}$", p.getMobile().toString()))
-			if(length!=10 )
-			errors.rejectValue("mobile", "mobile.length");
-		if(p.getNickName().length()<5 )
-			errors.rejectValue("nickName", "name.length");
-		if(p.getSemail().length()<5 )
-			errors.rejectValue("semail", "email.length");
-		
-	}//validate method
-
-}//class
-
--------------------------------------------------------------------------------
-package com.itcs.validator;
-
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
-
-import com.itcs.beans.Person;
-
-public class PersonValidator1 implements Validator {
-
-	public boolean supports(Class<?> clazz) {
-		return clazz.isAssignableFrom(Person.class);
-	}//supports method
-
-	public void validate(Object command, Errors errors) {
-		Person p=(Person) command;
-		if(p.getName().length()<5 )
-			errors.rejectValue("name", "p_name.length");
-		if(p.getEmail().length()<5 )
-			errors.rejectValue("email", "p_email.length");
-		if(p.getUsername().length()<5 )
-			errors.rejectValue("username", "p_username.length");
-		if(p.getPassword().length()<5 )
-			errors.rejectValue("password", "p_password.length");
-	}//validate method
-
-}//class
-
---------------------------------------------------------------------------
-package com.itcs.validator;
-
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
-
-import com.itcs.beans.Person;
-
-public class PersonValidator2 implements Validator {
-
-	public boolean supports(Class<?> clazz) {
-		return clazz.isAssignableFrom(Person.class);
-	}//supports method
-
-	public void validate(Object command, Errors errors) {
-		Person p=(Person) command;
-		if(p.getAge()<=15 || p.getAge()>=100 )
-			errors.rejectValue("age", "p_age.length");
-		if(p.getAddress().length()<5 )
-			errors.rejectValue("address", "p_address.length");
-		if(p.getOccupation().length()<5 )
-			errors.rejectValue("Occupation", "p_Occupation.length");
-			}//validate method
-
-}//class
-
+	
+}
 
 ---------------------------------------------------------------------
+package com.itcs.beans;
+
+public class LoginUser {
+
+	 private String user;
+	 private String pwd;
+	public String getUser() {
+		return user;
+	}
+	public void setUser(String user) {
+		this.user = user;
+	}
+	public String getPwd() {
+		return pwd;
+	}
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+	@Override
+	public String toString() {
+		return "LoginUser [user=" + user + ", pwd=" + pwd + "]";
+	}
+	 
+}
+-------------------------------------------------------------------------
 package com.itcs.beans;
 public class Person {
 	 
@@ -117,6 +120,7 @@ public class Person {
     private int age;
     private String address;
     private String Occupation;
+    
 	public String getName() {
 		return name;
 	}
@@ -168,10 +172,11 @@ public class Person {
 	
 	
 }
-----------------------------------------------------------------------------------------------------------------
-  package com.itcs.beans;
+------------------------------------------------------------
 
-import java.util.Arrays;
+package com.itcs.beans;
+
+
 
 public class UserData {
 	  private String nickName;
@@ -213,7 +218,36 @@ public class UserData {
 		
 }
 
-------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------
+# person beans class error
+p_name.length=Name should be atleast five alphabets
+p_email.length=Please pass five character
+p_username.length=Username should be 5 digits
+p_password.length=Password should be 5 digits
+
+p_age.length=Age must be greater then 15 @ less then 100
+p_address.length=Address should be 5 digits
+p_Occupation.length=Occupation should be 5 digits
+
+# UserData beans class error
+mobile.length=Mobile should be 10 digits
+name.length=Name should be atleast five alphabets
+email.length=Please pass five character
+#job.length=Occupation should be 5 digits
+
+
+#application messages for annotations, {ValidationClass}.{modelObjectName}.{field}
+#the {0} is field name, other fields are in alphabatical order, max and then min  
+#Size.customer.name=Customer {0} should be between {2} and {1} characters long
+#NotEmpty.customer.email=Email is a required field
+#NotNull.customer.age=Customer {0} should be in years
+
+#Generic annotation class messages
+#Email=Email address is not valid
+#NotNull=This is a required field
+#NotEmpty=This is a required field
+#Past=Date should be Past
+--------------------------------------------------------------
 package com.itcs.controller;
 
 import java.util.ArrayList;
@@ -223,16 +257,20 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.itcs.beans.Customer;
+import com.itcs.beans.LoginUser;
 import com.itcs.beans.Person;
 import com.itcs.beans.UserData;
 import com.itcs.validator.PersonValidator1;
@@ -250,7 +288,14 @@ public class LoginController {
 	private PersonValidator2 validator1;
 	@Inject
 	private UserDataValidator validator3;
-	
+	/*@Autowired
+	@Qualifier("employeeValidator")
+	private Validator validator4;
+
+	@InitBinder
+	private void initBinder(WebDataBinder binder) {
+		binder.setValidator(validator4);
+	}*/
 	@ModelAttribute("person")
 	public Person sessionPage() {
 		return new Person();
@@ -291,9 +336,10 @@ public class LoginController {
 	}// method
 
 	@RequestMapping("/login.htm")
-	public String login(@RequestParam("user") String user, @RequestParam String pwd,HttpSession ses) {
-		System.out.println("login method  " + user + "  " + pwd);
-		ses.setAttribute("user", user);ses.setAttribute("pwd", pwd);
+	//public String login(@RequestParam("user") String user, @RequestParam String pwd,HttpSession ses) {
+		public String login(@ModelAttribute LoginUser login,HttpSession ses) {
+		System.out.println("login method  " + login );
+		ses.setAttribute("login", login);
 		return "form1";
 	}// method
 
@@ -335,67 +381,246 @@ public class LoginController {
 		map.addAttribute("form1", form1);
 		return "form4";
 	}// method
+	@RequestMapping("/bean1.htm")
+	public String beanHome(@ModelAttribute("bean")  Customer cus) {
+		System.out.println("bean home method");
+		return "form5";
+	}// method
+	@RequestMapping("/bean.htm")
+	public String beanPage( @ModelAttribute("bean") @Valid Customer cus, BindingResult error,Map<String,Object> map) {
+		System.out.println("bean balidations method"+cus);
+		if(error.hasErrors())
+			return "form5";
+		map.put("customer", cus);
+		return "form4";
+	}// method
 }// class
---------------------------------------------------------------------------------------------------------------------
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+-------------------------------------------------------------------
+package com.itcs.validator;
 
-	
-	<!-- Processes application requests -->
-	<servlet>
-		<servlet-name>appServlet</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/spring.xml</param-value>
-		</init-param>
-		<load-on-startup>2</load-on-startup>
-	</servlet>
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+
+import com.itcs.beans.Person;
+
+public class PersonValidator1 implements Validator {
+
+	public boolean supports(Class<?> clazz) {
+		return clazz.isAssignableFrom(Person.class);
+	}//supports method
+
+	public void validate(Object command, Errors errors) {
+		Person p=(Person) command;
+		if(p.getName().length()<5 )
+			errors.rejectValue("name", "p_name.length");
+		if(p.getEmail().length()<5 )
+			errors.rejectValue("email", "p_email.length");
+		if(p.getUsername().length()<5 )
+			errors.rejectValue("username", "p_username.length");
+		if(p.getPassword().length()<5 )
+			errors.rejectValue("password", "p_password.length");
+	}//validate method
+
+}//class
+------------------------------------------------------------------------
+
+package com.itcs.validator;
+
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+
+import com.itcs.beans.Person;
+
+public class PersonValidator2 implements Validator {
+
+	public boolean supports(Class<?> clazz) {
+		return clazz.isAssignableFrom(Person.class);
+	}//supports method
+
+	public void validate(Object command, Errors errors) {
+		Person p=(Person) command;
+		if(p.getAge()<=15 || p.getAge()>=100 )
+			errors.rejectValue("age", "p_age.length");
+		if(p.getAddress().length()<5 )
+			errors.rejectValue("address", "p_address.length");
+		if(p.getOccupation().length()<5 )
+			errors.rejectValue("Occupation", "p_Occupation.length");
+			}//validate method
+
+}//class
+------------------------------------------------------------
+package com.itcs.validator;
+
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+
+
+import com.itcs.beans.UserData;
+
+public class UserDataValidator implements Validator {
+
+	public boolean supports(Class<?> clazz) {
+		return clazz.isAssignableFrom(UserData.class);
+	}//supports method
+
+	public void validate(Object command, Errors errors) {
+		UserData p=(UserData) command;
+		int length = String.valueOf(p.getMobile()).length(); //10
+		//if(!Pattern.matches("^\\d{10}$", p.getMobile().toString()))
+			if(length!=10 )
+			errors.rejectValue("mobile", "mobile.length");
+		if(p.getNickName().length()<5 )
+			errors.rejectValue("nickName", "name.length");
+		if(p.getSemail().length()<5 )
+			errors.rejectValue("semail", "email.length");
 		
-	<servlet-mapping>
-		<servlet-name>appServlet</servlet-name>
-		<url-pattern>*.htm</url-pattern>
-	</servlet-mapping>
-</web-app>
----------------------------------------------------------------------------------
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	}//validate method
 
-	<context:component-scan base-package="com.itcs.controller" />
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
-	<bean id="loginValidator" class="com.itcs.validator.PersonValidator1" />
-	<bean id="loginValidator1" class="com.itcs.validator.PersonValidator2" />
-    <bean id="loginValidator2" class="com.itcs.validator.UserDataValidator" />
-	
+}//class
+-------------------------------------------------------
+package com.itsc.custom.validator;
 
-     <bean id="messageSource"  class="org.springframework.context.support.ResourceBundleMessageSource">
-      <property name="basename"  value="com/itcs/commons/person_error"/>
-    </bean>
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
 
-	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
-		up static resources in the ${webappRoot}/resources directory -->
-	<!-- <resources mapping="/resources/**" location="/resources/" /> -->
-	<!-- <mvc:resources mapping="/static/**" location="/WEB-INF/static/" /> -->
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
+@Documented
+@Constraint(validatedBy = PhoneValidator.class)
+@Target( { ElementType.METHOD, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Phone {
 
-	<bean
-		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/views/" />
-		<property name="suffix" value=".jsp" />
-	</bean>
-	<!-- <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver"> 
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" 
-		/> <property name="prefix" value="/WEB-INF/views/" /> <property name="suffix" 
-		value=".html" /> </bean> -->
+    
+   String message() default "Please pass 10 digit Phone no";
+    
+   Class<?>[] groups() default {};
+    
+   Class<? extends Payload>[] payload() default {};
+     
+}//class
+------------------------------------------------------
+package com.itsc.custom.validator;
 
-</beans>
--------------------------------------------------------------------------------------------------------
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+public class PhoneValidator implements ConstraintValidator<Phone, String> {
+
+	public void initialize(Phone paramA) {
+	}
+
+	public boolean isValid(String phoneNo, ConstraintValidatorContext ctx) {
+		if(phoneNo == null){
+			return false;
+		}
+		//validate phone numbers of format "1234567890"
+       if (phoneNo.matches("\\d{10}")) return true;
+       //validating phone number with -, . or spaces
+       else if(phoneNo.matches("\\d{3}[-\\.\\s]\\d{3}[-\\.\\s]\\d{4}")) return true;
+       //validating phone number with extension length from 3 to 5
+       else if(phoneNo.matches("\\d{3}-\\d{3}-\\d{4}\\s(x|(ext))\\d{3,5}")) return true;
+       //validating phone number where area code is in braces ()
+       else if(phoneNo.matches("\\(\\d{3}\\)-\\d{3}-\\d{4}")) return true;
+       //return false if nothing matches the input
+       else return false;
+	}
+
+}
+-------------------------------------------------------------
+404.jsp
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>404 Error</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<style>
+* {
+	box-sizing: border-box;
+}
+body {
+	margin: 0px;
+	padding: 0px;
+	color: #333;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 12px;
+	line-height: 1.7em;
+	/*background: #dbdbdd url(body_bg.jpg) center top repeat-x;*/
+	background: -webkit-linear-gradient(#65A598, #507E6B) no-repeat;
+	background: -o-linear-gradient(#65A598, #507E6B) no-repeat;
+	background: -moz-linear-gradient(#65A598, #507E6B) no-repeat;
+	background: linear-gradient(#65A598, #507E6B) no-repeat;
+	background-color: #507E6B;
+}
+.clear {
+	clear: both;
+}
+#wrapper {
+	width: 984px;
+	margin: 75px auto 45px;
+	border-radius: 10px;
+	padding: 95px 63px;
+	background: #fff;
+	box-shadow: 0px 0px 10px #666;
+}
+h1,
+h2,
+h4 {
+	font-weight: normal;
+	margin: 0;
+}
+h1 {
+	color: #B6904F;
+	padding: 25px 35px 0 0;
+	text-align: right;
+	font-family: Arial;
+	font-size: 46px;
+}
+h2 {
+	font-size: 26px;
+	margin-bottom: 20px;
+}
+h4 {
+	font-size: 18px;
+	margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+<div id="wrapper">
+    <div id="content">
+        <div id="error_sidebar" style="padding: 0px; float: left; width: 39%;">
+            <div style="color: #F00;">
+                <h1><strong>404 Error</strong></h1>
+                <br/>
+            </div>
+        </div>
+        <div id="error_content" style="padding: 5px 0 0 4%; float: left; width: 50%; border-left: 2px solid #bababa;">
+            <h2 style="line-height: 30px;">The requested page does not exist.</h2>
+            <br/>
+            <h4>What to do next?</h4>
+            <ul>
+                <li>You can try refreshing the page (Click F5 button), the problem may be temporary</li>
+                <li>If you have entered the URL in by hand using the keyboard, double check whether it is correct</li>
+            </ul>
+            <p><strong>You can click on your browser back button to go back to previous page</strong></p>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+</div>
+</body>
+</html>
+-------------------------------------------------------
 login.jsp
+
 <html>
 <head>
 <link
@@ -445,7 +670,7 @@ function login(){
 					<div style="margin-bottom: 25px" class="input-group">
 						<span class="input-group-addon"><i
 							class="glyphicon glyphicon-user"></i></span> <input id="login-username"
-							type="text" class="form-control" name="user" value="aaaaa" 
+							type="text" class="form-control" name="user" 
 							placeholder="username or email">
 					</div>
 
@@ -585,37 +810,37 @@ function login(){
 </div>
 </body>
 </html>
--------------------------------------------------------------------------------------------------
+-----------------------------------------------------
 form1.jsp
 
- <%@taglib uri="http://www.springframework.org/tags/form"  prefix="form"%>    
+<%@taglib uri="http://www.springframework.org/tags/form"  prefix="form"%>    
 <!DOCTYPE html>
 <html lang="en">
-    <head> 
+   <head> 
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-  /*
+ <style>
+ /*
 /* Created by Filipe Pina
- * Specific styles of signin, register, component
- */
+* Specific styles of signin, register, component
+*/
 /*
- * General styles
- */
+* General styles
+*/
 #playground-container {
-    height: 500px;
-    overflow: hidden !important;
-    -webkit-overflow-scrolling: touch;
+   height: 500px;
+   overflow: hidden !important;
+   -webkit-overflow-scrolling: touch;
 }
 body, html{
-     height: 100%;
- 	background-repeat: no-repeat;
- 	background:url(https://i.ytimg.com/vi/4kfXjatgeEU/maxresdefault.jpg);
- 	font-family: 'Oxygen', sans-serif;
+    height: 100%;
+	background-repeat: no-repeat;
+	background:url(https://i.ytimg.com/vi/4kfXjatgeEU/maxresdefault.jpg);
+	font-family: 'Oxygen', sans-serif;
 	    background-size: cover;
 }
 
 .main{
- 	margin:50px 15px;
+	margin:50px 15px;
 }
 
 h1.title { 
@@ -639,68 +864,68 @@ label{
 
 input,
 input::-webkit-input-placeholder {
-    font-size: 11px;
-    padding-top: 3px;
+   font-size: 11px;
+   padding-top: 3px;
 }
 
 .main-login{
- 	background-color: #fff;
-    /* shadows and rounded borders */
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+	background-color: #fff;
+   /* shadows and rounded borders */
+   -moz-border-radius: 2px;
+   -webkit-border-radius: 2px;
+   border-radius: 2px;
+   -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+   -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
 
 }
 .form-control {
-    height: auto!important;
+   height: auto!important;
 padding: 8px 12px !important;
 }
 .input-group {
-    -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
-    -moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
-    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+   -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+   -moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+   box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
 }
 #button {
-    border: 1px solid #ccc;
-    margin-top: 28px;
-    padding: 6px 12px;
-    color: #666;
-    text-shadow: 0 1px #fff;
-    cursor: pointer;
-    -moz-border-radius: 3px 3px;
-    -webkit-border-radius: 3px 3px;
-    border-radius: 3px 3px;
-    -moz-box-shadow: 0 1px #fff inset, 0 1px #ddd;
-    -webkit-box-shadow: 0 1px #fff inset, 0 1px #ddd;
-    box-shadow: 0 1px #fff inset, 0 1px #ddd;
-    background: #f5f5f5;
-    background: -moz-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f5f5f5), color-stop(100%, #eeeeee));
-    background: -webkit-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
-    background: -o-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
-    background: -ms-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
-    background: linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#eeeeee', GradientType=0);
+   border: 1px solid #ccc;
+   margin-top: 28px;
+   padding: 6px 12px;
+   color: #666;
+   text-shadow: 0 1px #fff;
+   cursor: pointer;
+   -moz-border-radius: 3px 3px;
+   -webkit-border-radius: 3px 3px;
+   border-radius: 3px 3px;
+   -moz-box-shadow: 0 1px #fff inset, 0 1px #ddd;
+   -webkit-box-shadow: 0 1px #fff inset, 0 1px #ddd;
+   box-shadow: 0 1px #fff inset, 0 1px #ddd;
+   background: #f5f5f5;
+   background: -moz-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f5f5f5), color-stop(100%, #eeeeee));
+   background: -webkit-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+   background: -o-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+   background: -ms-linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+   background: linear-gradient(top, #f5f5f5 0%, #eeeeee 100%);
+   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#eeeeee', GradientType=0);
 }
 .main-center{
- 	margin-top: 30px;
- 	margin: 0 auto;
- 	max-width: 400px;
-    padding: 10px 40px;
+	margin-top: 30px;
+	margin: 0 auto;
+	max-width: 400px;
+   padding: 10px 40px;
 	background:#009edf;
 	    color: #FFF;
-    text-shadow: none;
+   text-shadow: none;
 	-webkit-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
 -moz-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
 box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
 
 }
 span.input-group-addon i {
-    color: #009edf;
-    font-size: 17px;
+   color: #009edf;
+   font-size: 17px;
 }
 
 .login-button{
@@ -711,8 +936,8 @@ span.input-group-addon i {
 	font-size: 11px;
 	text-align: center;
 }
-  
-  </style>
+ 
+ </style>
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -752,13 +977,21 @@ span.input-group-addon i {
 
 		}
 		</script>
+		
+<script>
+
+function myFunction() {
+	alert("reset");
+   document.getElementById("myForm").reset();
+}
+</script>
 	</head>
 	<body>
 		<div class="container">
 			<div class="row main">
 				<div class="main-login main-center">
 				<h5 style="color: yellow"><b>Registration Form 1</b></h5>
-					<form:form  method="post" action="form1.htm" onsubmit="return form1()" commandName="person" >
+					<form:form  method="post" action="form1.htm" onsubmit="return form1()" commandName="person" id="myForm">
 						<div class="form-group">
 							<label for="name" class="cols-sm-2 control-label">Your Name</label>
 							<div class="cols-sm-10">
@@ -775,7 +1008,7 @@ span.input-group-addon i {
 							<div class="cols-sm-10">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
-									<form:input  class="form-control" path="email" id="email"  placeholder="Enter your Email"/>
+									<form:input  class="form-control" path="email" id="email"  placeholder="Enter your Email" type="email"/>
 								</div>
 							</div>
 							<span style="color:red"><form:errors path="email"/></span>
@@ -817,7 +1050,7 @@ span.input-group-addon i {
 							<!-- <a href="https://ccp.cloudaccess.net/aff.php?aff=5188" target="_blank" type="button" id="button" class="btn btn-primary btn-lg btn-block login-button">Submit</a> -->
 						<!-- <a href="https://ccp.cloudaccess.net/aff.php?aff=5188" target="_blank" type="button" id="button" class="btn btn-primary "><b>Submit</b></a> -->
 						<input type="submit" value="Submit" class="btn btn-primary " style="text-align: left;">
-						<span class="pull-right"><input type="reset" value="Reset" class="btn btn-success " ></span>
+						<span class="pull-right"><input type="button" value="Reset" onclick="myFunction()" class="btn btn-success " ></span>
 						</div>
 						
 					</form:form>
@@ -826,14 +1059,15 @@ span.input-group-addon i {
 		</div>
 
 		 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+   <!-- Include all compiled plugins (below), or include individual files as needed -->
+   <script src="js/bootstrap.min.js"></script>
 	</body>
 </html>
-----------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------
 form2.jsp
- <%@taglib uri="http://www.springframework.org/tags/form"  prefix="form"%>    
+
+<%@taglib uri="http://www.springframework.org/tags/form"  prefix="form"%>    
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@page isELIgnored="false"%>
@@ -889,9 +1123,21 @@ form2.jsp
 	margin-top: 0;
 	text-align: right;
 	border-top: 1px solid #e5e5e5;
+	
+	
+}
+.btn-space {
+    margin-right: 390px;
 }
 </style>
+<script>
 
+function myFunction() {
+	alert("RESET METHOD");
+    document.getElementById("aaa").reset();
+    document.getElementById("bbb").reset();
+}
+</script>
 </head>
 <body>
 <br><br><br><br><br>
@@ -910,37 +1156,39 @@ form2.jsp
 						</h5>
 					</div>
 
-					<form:form action="form2.htm" method="post" commandName="person">
+					<form:form action="form2.htm" method="post" commandName="person" id="myForm">
 						<div class="modal-body">
 						<div class="row">
 							<div class="form-group">
-								<label for="userEmail">Age </label> <form:input 
-									class="form-control" required="" path="age" />
+								<label for="userEmail">Age </label> <form:input id="aaa"
+									class="form-control"  path="age" required=""/>
 								<!-- <span class="help-block">Your email address is also used to log in.</span> -->
 							</div>
 							<span style="color: red"><form:errors path="age"/></span>
 								
 									<div class="form-group">
 										<label for="password">Address</label> <form:input type="text"
-											class="form-control" required="" path="address" />
+											class="form-control" required="" path="address" id="bbb"/>
 										<!-- <span class="help-block">Choose a password for your new account.</span> -->
 									</div>
 								<span style="color: red">  <form:errors  path="address"/></span>
 							
 									<div class="form-group">
 										<label for="passwordr">Occupation </label> <form:input
-											type="text" class="form-control" required=""
-											path="Occupation" />
+											type="text" class="form-control" 
+											path="Occupation" required=""/>
 										<!-- <span class="help-block">Type the password again. Passwords must match.</span> -->
 									</div>
-									<span style="color: red"> <form:errors  path="Occupation"/>
+									<span style="color: red"> <form:errors  path="Occupation" />
 								</div>
 						
 						</div>
 
 						<div class="modal-footer">
-								<span class="pull-left"><button type="input" name="submit" class="btn btn-success btn-icon"> Prevoius</button></span>
-								<button type="submit" class="btn btn-default btn-icon" data-dismiss="modal"> Submit</button>
+								<span class="pull-left"><a href="login.htm" class="btn btn-success btn-icon"> Prevoius</a></span>
+								<span class="btn btn-space"><input type="button" value="Reset"
+								onclick="myFunction()" class="btn btn-warning"></span>
+								<button type="submit" class="btn btn-danger " > Submit</button>
 						</div>
 					</form:form>
 				</div>
@@ -949,14 +1197,13 @@ form2.jsp
 	</div>
 </body>
 </html>
+---------------------------------------------------------------
+form3.jsp
 
-
-----------------------------------------------------------------------------------------------------------
-form3.jsp 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+pageEncoding="UTF-8"%>
 <%@page isELIgnored="false"%>
- <%@taglib uri="http://www.springframework.org/tags/form"  prefix="form"%>    
+<%@taglib uri="http://www.springframework.org/tags/form"  prefix="form"%>    
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -965,211 +1212,211 @@ form3.jsp
 <title>form3</title>
 <style>
 .divider-text {
-    position: relative;
-    text-align: center;
-    margin-top: 15px;
-    margin-bottom: 15px;
+position: relative;
+text-align: center;
+margin-top: 15px;
+margin-bottom: 15px;
 }
 .divider-text span {
-    padding: 7px;
-    font-size: 12px;
-    position: relative;   
-    z-index: 2;
+padding: 7px;
+font-size: 12px;
+position: relative;   
+z-index: 2;
 }
 .divider-text:after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    border-bottom: 1px solid #ddd;
-    top: 55%;
-    left: 0;
-    z-index: 1;
+content: "";
+position: absolute;
+width: 100%;
+border-bottom: 1px solid #ddd;
+top: 55%;
+left: 0;
+z-index: 1;
 }
 
 .btn-facebook {
-    background-color: #405D9D;
-    color: #fff;
+background-color: #405D9D;
+color: #fff;
 }
 .btn-twitter {
-    background-color: #42AEEC;
-    color: #fff;
+background-color: #42AEEC;
+color: #fff;
 }
 </style>
 <link
-	href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-	rel="stylesheet" id="bootstrap-css">
+href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+rel="stylesheet" id="bootstrap-css">
 <script
-	src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script
-	src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script type="text/javascript">
-		function form3(){
-			alert("huuu");
-			var x=document.getElementById("nickname").value;
-			var y=document.getElementById("email").value;
-			var z=document.getElementById("number").value;
-			var a=document.getElementById("job1").value;
-			alert("ee="+a);
-			if(x==""){
-				alert("Please pass Nick Name");
-				return false;
-			}
-			if(y==""){
-				alert("Please pass Email");
-				return false;
-			}
-			if(z==""){
-				alert("Please pass Phone No");
-				return false;
-			}
-			if(a==""){
-				alert("Please Select one Occuptation");
-				return false;
-			}
-			return true;
-
+src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+	function form3(){
+		
+		var x=document.getElementById("nickname").value;
+		var y=document.getElementById("email").value;
+		var z=document.getElementById("number").value;
+		var a=document.getElementById("job1").value;
+		//alert("ee="+a);
+		if(x==""){
+			alert("Please pass Nick Name");
+			return false;
 		}
-		</script>
+		if(y==""){
+			alert("Please pass Email");
+			return false;
+		}
+		if(z==""){
+			alert("Please pass Phone No");
+			return false;
+		}
+		if(a=="NONE"){
+			alert("Please Select one Occuptation");
+			return false;
+		}
+		return true;
+
+	}
+	</script>
 </head>
 <body>
 
-	<link rel="stylesheet"
-		href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
 
 
-	<div class="container">
-		<br>
-		<p class="text-center">
-			<a
-				href="http://bootstrap-ecommerce.com/"></a>
-		</p>
-		<div class="card bg-light">
-			<article class="card-body mx-auto" style="max-width: 400px;">
-			<h4 class="card-title mt-3 text-center">Registration From 3</h4>
-			<!-- <p class="text-center">Get started with your free account</p><p>
-				<a href="" class="btn btn-block btn-twitter"> <i
-					class="fab fa-twitter"></i>   Login via Twitter
-				</a> <a href="" class="btn btn-block btn-facebook"> <i
-					class="fab fa-facebook-f"></i>   Login via facebook
-				</a>
-			</p> -->
-			<hr size="30">
-			
-			<form:form method="post" action="form3.htm" onsubmit="return form3()" commandName="userdata">
-				<div class="form-group input-group">
-					<div class="input-group-prepend">
-						<span class="input-group-text"> <i class="fa fa-user"></i>
-						</span>
-					</div>
-					<form:input path="nickName" class="form-control" placeholder="Nick name" id="nickname"
-						type="text"/>
-				</div>
-				<span style="color: red"><form:errors path="nickName"/></span>
-				<!-- form-group// -->
-				<div class="form-group input-group">
-					<div class="input-group-prepend">
-						<span class="input-group-text"> <i class="fa fa-envelope"></i>
-						</span>
-					</div>
-					<form:input path="semail" class="form-control" placeholder="Secondery Email address" id="email"
-						type="email"/>
-				</div>
-				<span style="color: red"><form:errors path="semail"/>
-				<!-- form-group// -->
-				<div class="form-group input-group">
-					<div class="input-group-prepend">
-						<span class="input-group-text"> <i class="fa fa-phone"></i>
-						</span>
-					</div>
-					<select class="custom-select" style="max-width: 120px;">
-						<option selected="">+91</option>
-						<option value="1">+92</option>
-						<option value="2">+18</option>
-						<option value="3">+701</option>
-					</select> <form:input path="mobile" class="form-control" placeholder="Phone number" id="number"
-						type="text"/>
-				</div>
-			<span style="color: red">	<form:errors path="mobile"/></span>
-				<!-- form-group// -->
-				<div class="form-group input-group">
-					<div class="input-group-prepend">
-						<span class="input-group-text"> <i class="fa fa-building"></i>
-						</span>
-					</div>
-                    <%-- <form:checkboxes items="${domains}" path="job" class="form-control" id="job1" />  --%>
-					<%-- <form:select  path="job"  class="form-control" id="job1">
-                     <form:option value="NONE"> --SELECT--</form:option>
-                       <form:options items="${domains}"></form:options>
-                     </form:select> --%>
-                     
-                     <form:select path = "job" id="job1">
-                     <form:option value = "NONE" label = "Select"/>
-                     <form:options items = "${domains}" />
-                  </form:select>    
-                     <%-- <ul>
-            <form:select path="job" items="${domains}" class="form-control" id="job1"/>
-                 </ul> --%>
-					<!-- <select class="form-control" name="job" id="job1">
-						<option selected="">Select job type</option>
-						<option >Web Developer</option>
-						<option>Manager</option>
-						<option selected="selected">Software Engineer</option>
-						<option>Hardware Engineer</option>
-					</select> -->
-				</div>
-				<!-- form-group end.// 
-				<div class="form-group input-group">
-					<div class="input-group-prepend">
-						<span class="input-group-text"> <i class="fa fa-lock"></i>
-						</span>
-					</div>
-					<input class="form-control" placeholder="Create password"
-						type="password">
-				</div>-->
-				<div class="form-group">
-					<button type="submit" class="btn btn-danger btn-block">
-						Previous </button>
-				</div>
-				<div class="form-group">
-					<button type="submit" class="btn btn-primary btn-block">
-						Submit </button>
-				</div>
-				<!-- form-group// 
-				<p class="text-center">
-					Have an account? <a href="">Log In</a>
-				</p>-->
-			</form:form>
-			</article>
-		</div>
-		<!-- card.// -->
-
-	</div>
-	<!--container end.//-->
-
+<div class="container">
 	<br>
-	<br>
-	<article class="bg-secondary mb-3">
-	<div class="card-body text-center">
-		<h3 class="text-white mt-3">ITCS  Contractors</h3>
-		<p class="h5 text-white">
-			Able Intrnate Payroll<br> E-Filling Ready,
-			Aexchange
-		</p>
-		<br>
+	<p class="text-center">
+		<a
+			href="http://bootstrap-ecommerce.com/"></a>
+	</p>
+	<div class="card bg-light">
+		<article class="card-body mx-auto" style="max-width: 400px;">
+		<h4 class="card-title mt-3 text-center">Registration From 3</h4>
+		<!-- <p class="text-center">Get started with your free account</p><p>
+			<a href="" class="btn btn-block btn-twitter"> <i
+				class="fab fa-twitter"></i>   Login via Twitter
+			</a> <a href="" class="btn btn-block btn-facebook"> <i
+				class="fab fa-facebook-f"></i>   Login via facebook
+			</a>
+		</p> -->
+		<hr size="30">
 		
+		<form:form method="post" action="form3.htm" onsubmit="return form3()" commandName="userdata">
+			<div class="form-group input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text"> <i class="fa fa-user"></i>
+					</span>
+				</div>
+				<form:input path="nickName" class="form-control" placeholder="Nick name" id="nickname"
+					type="text"/>
+			</div>
+			<span style="color: red"><form:errors path="nickName"/></span>
+			<!-- form-group// -->
+			<div class="form-group input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text"> <i class="fa fa-envelope"></i>
+					</span>
+				</div>
+				<form:input path="semail" class="form-control" placeholder="Secondery Email address" id="email"
+					type="email"/>
+			</div>
+			<span style="color: red"><form:errors path="semail"/>
+			<!-- form-group// -->
+			<div class="form-group input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text"> <i class="fa fa-phone"></i>
+					</span>
+				</div>
+				<select class="custom-select" style="max-width: 120px;">
+					<option selected="">+91</option>
+					<option value="1">+92</option>
+					<option value="2">+18</option>
+					<option value="3">+701</option>
+				</select> <form:input path="mobile" class="form-control" placeholder="Phone number" id="number"
+					type="text"/>
+			</div>
+		<span style="color: red">	<form:errors path="mobile"/></span>
+			<!-- form-group// -->
+			<div class="form-group input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text"> <i class="fa fa-building"></i>
+					</span>
+				</div>
+                <%-- <form:checkboxes items="${domains}" path="job" class="form-control" id="job1" />  --%>
+				<%-- <form:select  path="job"  class="form-control" id="job1">
+                 <form:option value="NONE"> --SELECT--</form:option>
+                   <form:options items="${domains}"></form:options>
+                 </form:select> --%>
+                 
+                 <form:select path = "job" id="job1">
+                 <form:option value = "NONE" label = "Select"/>
+                 <form:options items = "${domains}" />
+              </form:select>    
+                 
+				<!-- <select class="form-control" name="job" id="job1">
+					<option selected="">Select job type</option>
+					<option >Web Developer</option>
+					<option>Manager</option>
+					<option selected="selected">Software Engineer</option>
+					<option>Hardware Engineer</option>
+				</select> -->
+			</div>
+			<!-- form-group end.// 
+			<div class="form-group input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text"> <i class="fa fa-lock"></i>
+					</span>
+				</div>
+				<input class="form-control" placeholder="Create password"
+					type="password">
+			</div>-->
+			<div class="form-group">
+				
+					<a href="form1.htm" class="btn btn-danger btn-block"> Prevoius</a>
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary btn-block">
+					Submit </button>
+			</div>
+			<!-- form-group// 
+			<p class="text-center">
+				Have an account? <a href="">Log In</a>
+			</p>-->
+		</form:form>
+		</article>
 	</div>
+	<!-- card.// -->
+
+</div>
+<!--container end.//-->
+
+<br>
+<br>
+<article class="bg-secondary mb-3">
+<div class="card-body text-center">
+	<h3 class="text-white mt-3">ITCS  Contractors</h3>
+	<p class="h5 text-white">
+		Able Intrnate Payroll<br> E-Filling Ready,
+		Aexchange
+	</p>
 	<br>
-	<br>
-	</article>
+	
+</div>
+<br>
+<br>
+</article>
 
 </body>
 </html>
-
-------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------
 form4.jsp
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@page isELIgnored="false"%>
+pageEncoding="UTF-8"%>
+<%@page isELIgnored="false"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -1188,8 +1435,154 @@ Login Pwd=${sessionScope.pwd}<br><br>
 
 <a href="form2.htm">Form3</a><br><br>
 <a href="home.htm">login page</a><br><br>
+<a href="bean1.htm">Go bean Validations page</a><br><br>
 
+<h3>
+Customer Saved Successfully.
+</h3>
+${customer}
+<strong>Customer Name:${customer.name}</strong><br>
+<strong>Customer Email:${customer.email}</strong><br>
+<strong>Customer Age:${customer.age}</strong><br>
+<strong>Customer Gender:${customer.gender}</strong><br>
+<strong>Customer Gender:${customer.phone}</strong><br>
+<strong>Customer Birthday:<fmt:formatDate value="${customer.birthday}" type="date" /></strong><br>
 
 </body>
 </html>
------------------------------------------------------------------------
+----------------------------------------------------------------
+form5.jsp
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib uri="http://www.springframework.org/tags/form"
+prefix="springForm"%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>form 5  Page</title>
+<style>
+.error {
+color: #ff0000;
+font-style: italic;
+font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<springForm:form method="POST" commandName="bean"
+	action="bean.htm">
+	<table>
+		<tr>
+			<td>Name:</td>
+			<td><springForm:input path="name" /></td>
+			<td><springForm:errors path="name" cssClass="error" /></td>
+		</tr>
+		<tr>
+			<td>Email:</td>
+			<td><springForm:input path="email" /></td>
+			<td><springForm:errors path="email" cssClass="error" /></td>
+		</tr>
+		<tr>
+			<td>Age:</td>
+			<td><springForm:input path="age" /></td>
+			<td><springForm:errors path="age" cssClass="error" /></td>
+		</tr>
+		<tr>
+			<td>Gender:</td>
+			<td><springForm:select path="gender">
+					<springForm:option value="" label="Select Gender" />
+					<springForm:option value="MALE" label="Male" />
+					<springForm:option value="FEMALE" label="Female" />
+				</springForm:select></td>
+			<td><springForm:errors path="gender" cssClass="error" /></td>
+		</tr>
+		<tr>
+			<td>Birthday:</td>
+			<td><springForm:input path="birthday" placeholder="dd/MM/yyyy"/></td>
+			<td><springForm:errors path="birthday" cssClass="error" /></td>
+		</tr>
+		<tr>
+			<td>Phone:</td>
+			<td><springForm:input path="phone" /></td>
+			<td><springForm:errors path="phone" cssClass="error" /></td>
+		</tr>
+		<tr>
+			<td colspan="3"><input type="submit" value="Save Customer"></td>
+		</tr>
+	</table>
+
+</springForm:form>
+
+</body>
+</html>
+
+-------------------------------------------------------------------
+spring.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<context:component-scan base-package="com.itcs" />
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean id="loginValidator" class="com.itcs.validator.PersonValidator1" />
+	<bean id="loginValidator1" class="com.itcs.validator.PersonValidator2" />
+    <bean id="loginValidator2" class="com.itcs.validator.UserDataValidator" />
+	
+
+     <bean id="messageSource"  class="org.springframework.context.support.ResourceBundleMessageSource">
+      <property name="basename"  value="com/itcs/commons/person_error"/>
+     <property name="defaultEncoding" value="UTF-8" />
+    </bean>
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<!-- <resources mapping="/resources/**" location="/resources/" /> -->
+	<!-- <mvc:resources mapping="/static/**" location="/WEB-INF/static/" /> -->
+     <mvc:annotation-driven></mvc:annotation-driven>
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<!-- <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver"> 
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" 
+		/> <property name="prefix" value="/WEB-INF/views/" /> <property name="suffix" 
+		value=".html" /> </bean> -->
+
+</beans>
+----------------------------------------------------------------------
+web.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring.xml</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+</web-app>
