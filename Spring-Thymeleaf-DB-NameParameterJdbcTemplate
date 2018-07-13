@@ -1,0 +1,779 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.itcs</groupId>
+	<artifactId>Spring-Thymeleaf</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Spring-Thymeleaf Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<servlet.version>3.1.0</servlet.version>
+		<spring.version>4.3.14.RELEASE</spring.version>
+		<commons.version>2.1.1</commons.version>
+		<log4j.version>1.2.17</log4j.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servlet.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf-spring4</artifactId>
+			<version>3.0.9.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>${commons.version}</version>
+		</dependency>
+		<!-- Log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.3-1100-jdbc41</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<finalName>Spring-Thymeleaf</finalName>
+	</build>
+</project>
+-------------------------------------------------------------------------
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+	<display-name>Archetype Created Web Application</display-name>
+	<servlet>
+		<servlet-name>servlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet
+
+		</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				/WEB-INF/servlet-config.xml
+			</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>servlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/resources/404.jsp</location>
+	</error-page>
+</web-app>
+------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<mvc:annotation-driven />
+	<context:component-scan base-package="com.itcs" />
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.dbuser}" />
+		<property name="password" value="${jdbc.dbpassword}" />
+	</bean>
+     
+     <bean id="jt" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+      <constructor-arg ref="dataSource"/>
+     </bean>
+     
+	<bean id="templateResolver"
+		class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/thl/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML5" />
+	</bean>
+
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+	</bean>
+   <context:property-placeholder location="classpath:database.properties"/>
+</beans>
+---------------------------------------------------------------------
+AddNewEmp1.html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<title>Spring+Thymeleaf</title>
+</head>
+<body>
+	<!-- start: MAIN CONTAINER -->
+	<div class="container">
+		<ol class="breadcrumb">
+			<li><a th:href="@{#}">Home</a></li>
+			<li class="active">Add New Employee</li>
+		</ol>
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4>Add New Employee</h4>
+					</div>
+					<div class="panel-body">
+						<h4 class="text-center">Add New Employee</h4>
+						<p class="text-center">Please click here to Add New Employee
+							Data.</p>
+						<hr />
+						<div class="col-sm-10 col-sm-offset-1">
+							<br />
+							<div class="row">
+
+								<div class="col-sm-6 text-center">
+									<a th:href="@{/employee/create}"
+										class="btn btn-info btn-lg"> <span
+										class="glyphicon glyphicon-user"></span> EMP
+									</a> <br /> <br />
+									<p>
+										Manually <br />Create Employee
+									</p>
+								</div>
+								<div class="col-sm-6 text-center">
+									<a th:href="@{#}"
+										class="btn btn-info btn-lg"> <span
+										class="glyphicon glyphicon-camera"></span>
+									</a>
+									<!-- <a th:href="@{/employee/create/newemp'}" class="setURLLL">
+                                <button name="Spreadsheet" class="btn btn-default btn-dwn" type="button"><i class="fa fa-users fa-2x"></i></button>
+                                </a> -->
+									<br /> <br />
+									<p>
+										Batch<br /> Upload Employee
+									</p>
+
+
+								</div>
+							</div>
+							<br /> <br />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end: MAIN CONTAINER -->
+</body>
+</html>
+---------------------------------------------------------------------
+AddNewEmp2.html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- <link href="resource/bootstrap.min.css" rel="stylesheet" media="screen"> </link>
+  <link th:href="@{/resource/bootstrap.min.css}" rel="stylesheet"/> -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css" rel="stylesheet" id="bootstrap-css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<title>Spring+Thymeleaf</title>
+</head>
+<body>
+ <!-- <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="resource/bootstrap.min.js"></script>
+<script th:src="@{/resource/bootstrap.min.js}"></script>
+<script th:src="@{/resource/jquery-3.3.1.js}"></script> -->
+	<!-- <div class="container-fluid"> -->
+	<div class="container">
+		<ol class="breadcrumb">
+			<li><a th:href="@{/employee/addnew}">Home</a></li>
+			<li class="active">Add New Employee</li>
+		</ol>
+		<form class="form-horizontal" th:object="${empBean}" th:method="POST"
+			th:action="@{/employee/save}" id="empBean">
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<div class="panel panel-default">
+
+						<div class="panel-heading">
+							<div class="pull-right">
+								<a class="btn btn-default"
+									th:href="@{/employee/addnew}">Back</a>
+								 <input type="submit" class="btn btn-primary" value="Save"></input>
+								<!-- <button name="Submit" class="btn btn-primary" type="button"
+									th:onclick="'javascript:save();'">Save</button> -->
+							</div>
+							<h4>Add New Employee</h4>
+						</div>
+						
+						 <div class="panel-body">
+                          <h4>Employee Personal Details <small><span class="pull-right">(<span class="required"></span>) = required fields.</span></small></h4>
+                             <div class="clearfix"></div> <hr/>
+                             <fieldset>
+                             <div class="form-group" >
+											<label class="col-sm-6 control-label">Works Number / Payroll ID</label>
+											<div class="col-sm-4">
+	                                   			<input type="text" class="form-control input-md" id="payrollId" name="payrollId" th:field="*{payrollId}" maxlength="20" required="required"/>
+	                                   			<!-- <span class="help-block" th:errors="*{eeWksNo}"></span> -->
+											</div>
+										</div>
+                            
+                            <div class="form-group" >
+											<label class="col-sm-6 control-label" >Title</label>
+											<div class="col-sm-4">
+											 <select id="title" th:field="*{title}" class="form-control" required="required">
+											  <option value="" selected="selected">Please select</option>
+											  <option value="mr">Mr.</option>
+											 <option value="mrs">Mrs</option>
+											  <option value="miss">Miss.</option>
+											</select>
+												<!-- <select id="eeTtl" th:field="*{eeTtl}" class="form-control" required="required">
+													<option value="" selected="selected">Please select</option>
+													<option th:each="sopt:${@codeMapUtil.getCodeMaps(T(com.iss.common.utils.CodeMapType).TITLE)}" 
+			   											th:value="${sopt.codeMapKey}" th:text="${sopt.codeMapValue}"></option>
+												</select>
+												<span class="help-block" th:errors="*{eeTtl}"></span> -->
+											</div>
+										</div>
+                            
+                            <div class="form-group" >
+											<label class="col-sm-6 control-label">Surname</label>
+											<div class="col-sm-4">
+	                                   			<input type="text" class="form-control input-md" id="eeSurname" name="eeSurname" th:field="*{eeSurname}" maxlength="100" required="required"/>
+	                                   			<!-- <span class="help-block" th:errors="*{eeSurname}"></span> -->
+											</div>
+										</div>
+                            
+                            <div class="form-group" >
+											<label class="col-sm-6 control-label">Forename</label>
+											<div class="col-sm-4">
+	                                   			<input type="text" class="form-control input-md" id="eeFname" name="eeFname" th:field="*{eeFname}" maxlength="100" required="required"/>
+	                                   			<!-- <span class="help-block" th:errors="*{eeFname}"></span> -->
+											</div>
+										</div>
+										
+                            <div class="form-group" >
+                            <!-- <div class="form-group" th:classappend="${#fields.hasErrors('eeSFname')} ? has-error"> -->
+											<label class="col-sm-6 control-label">Second Forename</label>
+											<div class="col-sm-4">
+	                                   			<input type="text" class="form-control input-md" id="eeSFname" name="eeSFname" th:field="*{eeSFname}" maxlength="100"/>
+	                                   			<!-- <span class="help-block" th:errors="*{eeSFname}"></span> -->
+											</div>
+										</div>
+										
+                           <!--  <div class="form-group" >
+                            <div class="form-group" th:classappend="${#fields.hasErrors('eeAddress.addrLine1')} ? has-error">
+											<label class="col-sm-6 control-label">Address</label>
+											<div class="col-sm-4">
+												<input type="text" class="form-control"  th:field="*{add.address}" maxlength="100"/>
+												<span class="help-block" th:errors="*{eeAddress.addrLine1}"></span>
+											</div>
+										</div>
+                            
+                             <div class="form-group" >
+                            <div class="form-group" th:classappend="${#fields.hasErrors('eeAddress.addrPCode')} ? has-error">
+											<label class="col-sm-6 control-label" >Post Code</label>
+											<div class="col-sm-4">
+												<input type="text" class="form-control" th:field="*{add.code}" maxlength="20" required="required"/>
+												<span class="help-block" th:errors="*{eeAddress.addrPCode}"></span>
+											</div>
+										</div> -->
+                            
+                             <div class="form-group" >
+                           <!--  <div class="form-group" th:classappend="${#fields.hasErrors('eeAddress.addrLine5')} ? has-error"> -->
+											<label class="col-sm-6 control-label" >Country</label>
+											<div class="col-sm-4">
+											<select id="countery" th:field="*{countery}" class="form-control" required="required">
+											  <option value="" selected="selected">Please select</option>
+											  <option value="ind">INDIA</option>
+											 <option value="us">AMERICA</option>
+											  <option value="uk">UNITED KINGDOM.</option>
+											</select>
+												<!-- <select id="addrLine5" th:field="*{eeAddress.addrLine5}" class="form-control">
+													<option th:each="sopt:${ISOCountries}" th:value="${sopt.countryCode}" th:text="${sopt.countryName}"></option>
+												</select>
+												<span class="help-block" th:errors="*{eeAddress.addrLine5}"></span> -->
+											</div>
+										</div>
+                            
+                             <div class="form-group" >
+                            <!-- <div class="form-group" th:classappend="${#fields.hasErrors('eeMobile')} ? has-error"> -->
+											<label class="col-sm-6 control-label">Employee Mobile. No.</label>
+											<div class="col-sm-4">
+												<input type="text" class="form-control" id="eeMobile" name="eeMobile" th:field="*{eeMobile}" maxlength="35" />
+												<!-- <span class="help-block" th:errors="*{eeMobile}"></span> -->
+											</div>
+										</div>
+                            
+                             <div class="form-group" >
+                          <!--   <div class="form-group" th:classappend="${#fields.hasErrors('eePerEmail')} ? has-error"> -->
+											<label class="col-sm-6 control-label">Employee E-Mail</label>
+											<div class="col-sm-4">
+												<input type="text" class="form-control" id="eePerEmail" name="eePerEmail" th:field="*{eePerEmail}" maxlength="100" />
+												<!-- <span class="help-block" th:errors="*{eePerEmail}"></span> -->
+											</div>
+										</div>
+                            
+                             <div class="form-group" >
+                            <!-- <div class="form-group" th:classappend="${#fields.hasErrors('eeDob')} ? has-error"> -->
+											<label class="col-sm-6 control-label">Date of Birth</label>
+											<div class="col-sm-3">
+												<div class="input-group date"  id="datepicker">
+													<input  class="form-control input-md" id="eeDob" name="eeDob" th:field="*{eeDob}" maxlength="10" size="10" data-date-format="DD/MM/YYYY" required="required"/>
+													<span class="input-group-addon" id="datepickericon"><a href="#"><i class="fa fa-calendar-o"></i></a></span>
+												</div>
+												<!-- <span class="help-block" th:errors="*{eeDob}"></span> -->												
+											</div>
+										</div>
+                            
+                             <div class="form-group" >
+                           <!--  <div class="form-group" th:classappend="${#fields.hasErrors('eeSex')} ? has-error"> -->
+											<label class="col-sm-6 control-label" >Gender</label>
+											<div class="col-sm-4">
+											<select id="gender" th:field="*{gender}" class="form-control" required="required">
+											  <option value="" selected="selected">Please select</option>
+											  <option value="m">Male</option>
+											 <option value="f">Femal</option>
+											  <option value="o">Other .</option>
+											</select>
+												<!-- <select id="eeSex" th:field="*{eeSex}" class="form-control" required="required">
+													<option th:each="sopt:${@codeMapUtil.getCodeMaps(T(com.iss.common.utils.CodeMapType).SEX)}" 
+			   											th:value="${sopt.codeMapKey}" th:text="${sopt.codeMapValue}"></option>
+												</select> 
+												<span class="help-block" th:errors="*{eeSex}"></span>-->
+											</div>
+										</div>
+                            
+                              <div class="form-group" >
+                           <!--  <div class="form-group" th:classappend="${#fields.hasErrors('eeNiNumber')} ? has-error"> -->
+											<label class="col-sm-6 control-label">Employee's NINo</label>
+											<div class="col-sm-3">
+	                                   			<input type="text" class="form-control input-md" id="eeNiNumber" name="eeNiNumber" th:field="*{eeNiNumber}" maxlength="20"/>
+	                                   			<!-- <span class="help-block" th:errors="*{eeNiNumber}"></span> -->
+											</div>
+										</div>
+                            
+                             <div class="form-group" >
+                           <!--  <div class="form-group" th:classappend="${#fields.hasErrors('eePayFreq')} ? has-error"> -->
+											<label class="col-sm-6 control-label" >Payment Frequency</label>
+											<div class="col-sm-4">
+											<select id="eePayFreq" th:field="*{eePayFreq}" class="form-control" required="required">
+											  <option value="" selected="selected">Please select</option>
+											  <option value="mon">Monthely</option>
+											 <option value="week">Weekley</option>
+											  <option value="year">Annuley .</option>
+											   <option value="qur">Quaterly .</option>
+											</select>
+												<!-- <select id="eePayFreq" th:field="*{eePayFreq}" class="form-control" required="required">
+													<option th:each="sopt:${@codeMapUtil.getCodeMaps(T(com.iss.common.utils.CodeMapType).PAY_FREQ)}" 
+			   											th:value="${sopt.codeMapKey}" th:text="${sopt.codeMapValue}"></option>
+												</select>
+												<span class="help-block" th:errors="*{eePayFreq}"></span> -->
+											</div>
+										</div>
+                            
+                            
+                            </fieldset>
+                        </div>
+                        <div class="panel-footer">
+                    <div class="pull-right">
+                    <a class="btn btn-default"
+									th:href="@{/employee/addnew}">Back</a>
+								 <input type="submit" class="btn btn-primary" value="Save"></input>
+                       <!--  <a class="btn btn-default" th:href="@{${T(com.iss.aepm.utils.AePrefixConstants).AE_URL_PREFIX}+'/employee/emp-details/active'}">Back</a>
+                        <button name="Submit" class="btn btn-primary" type="button" th:onclick="'javascript:save();'">Save</button> -->
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+	<script >
+	    $(function () {
+	        $('#datepicker').datepicker({
+	            format: "dd/mm/yyyy",
+	            autoclose: true,
+	            todayHighlight: true,
+		        showOtherMonths: true,
+		        selectOtherMonths: true,
+		        autoclose: true,
+		        changeMonth: true,
+		        changeYear: true,
+		        orientation: "button"
+	        });
+	    });
+	</script>
+</body>
+
+</html>
+---------------------------------------------------------------
+AddNewEmp.html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+<div class="jumbotron text-xs-center">
+  <h1 class="display-3"> EMPLOYEE DATA SAVED SUCCESSFULLY</h1>
+  <p class="lead"><strong>Please check your email</strong> for further instructions on how to complete your account setup.</p>
+  <hr>
+  <p>
+    Having trouble? <a href="#">Contact us</a>
+  </p>
+  <p class="lead">
+    <a class="btn btn-primary btn-sm" th:href="@{/employee/addnew}" role="button">Continue to homepage</a>
+  </p>
+</div>
+</div>
+</body>
+</html>
+------------------------------------------------------------------------------
+log4j.properties
+# Root logger option
+log4j.rootLogger=DEBUG, stdout, file
+
+# Redirect log messages to console
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+
+# Redirect log messages to a log file
+#log4j.appender.file=org.apache.log4j.RollingFileAppender
+#outputs to Tomcat home
+#log4j.appender.file.File=${catalina.home}/logs/myapp.log
+#log4j.appender.file.MaxFileSize=5MB
+#log4j.appender.file.MaxBackupIndex=10
+#log4j.appender.file.layout=org.apache.log4j.PatternLayout
+#log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+------------------------------------------------------------------------------------------------------
+database.properties
+# Database properties
+
+jdbc.driver=org.postgresql.Driver
+jdbc.url=jdbc:postgresql://192.168.8.200:5432/dummy
+jdbc.dbuser=payroll
+jdbc.dbpassword=payroll
+
+-------------------------------------------------------------------------------------------
+ package com.itcs.dao;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import com.itcs.beans.Employee;
+@Repository
+public class EmployeeDAOImpl implements EmployeeDAO {
+
+	private static final Logger logger = Logger.getLogger(EmployeeDAOImpl.class);
+	private static final String INSERT_EMP="INSERT INTO emp111(payrollid,title,eesurname,eefname,eesfname,countery,eemobile,eeperemail,eedob,gender,eeninumber,eepayfreq) VALUES(:payrollId,:title,:eeSurname,:eeFname,:eeSFname,:countery,:eeMobile,:eePerEmail,:eeDob,:gender,:eeNiNumber,:eePayFreq)";
+	
+	@Autowired
+	private NamedParameterJdbcTemplate npjt;
+	
+	public int save(Employee emp) {
+		logger.debug("ENTERED SAVE METHOD DAO  CLASS.........................");
+		BeanPropertySqlParameterSource parms=new BeanPropertySqlParameterSource(emp);
+		int count=npjt.update(INSERT_EMP, parms);
+		System.out.println(count);
+		 return count;
+	}//method
+
+}//class
+-------------------------------------------------------------------------------------------------------
+package com.itcs.service;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.itcs.beans.Employee;
+import com.itcs.dao.EmployeeDAO;
+
+@Service
+public class EmpServiceImpl implements EmployeeService {
+	private static final Logger logger = Logger.getLogger(EmpServiceImpl.class);
+
+	@Autowired
+	EmployeeDAO dao;
+
+	public String insertEmp(Employee emp) {
+		logger.debug("ENTERED INSERT_EMP METHOD SERVICE  CLASS.........................");
+		int count = 0;
+		count = dao.save(emp);
+		System.out.println(count);
+		if (count == 0)
+			return "Employee Records not Saved";
+		else
+			return "Employee Records Saved";
+
+	}// method
+}// class
+------------------------------------------------------------------------------------------------------
+package com.itcs.controller;
+
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.itcs.beans.Employee;
+import com.itcs.service.EmployeeService;
+
+
+
+@Controller
+public class EmployeeController {
+	private static final Logger logger = Logger.getLogger(EmployeeController.class);
+
+	@Autowired
+	EmployeeService service;
+	
+	@RequestMapping(value = "/employee/addnew")
+    public String addNewEmp(Employee employee) throws Exception {
+		logger.debug("ENTERED ADDNEW METHOD CONTROLLER CLASS.........................");
+		return "/employee/AddNewEmp1";
+	}
+	
+	@RequestMapping(value = "/employee/create")
+    public String manuallyCreateNewEmp(Model model,@ModelAttribute("empBean") Employee emp) throws Exception {
+		logger.debug("ENTERED MANUALLYCREATENEWEMP METHOD CONTROLLER CLASS..........................");
+		return "/employee/AddNewEmp2";
+	}//method
+
+	
+	@RequestMapping(value = "/employee/save")
+    public String addNewEmpSave(@ModelAttribute("empBean") Employee emp)   {
+		logger.debug("ENTERED ADDNEWEMPSAVE METHOD  CONTROLLER CLASS..........................");
+		System.out.println("addNewEmpSave method  "+emp);
+		String result=null;
+		
+		 result=service.insertEmp(emp);
+		 System.out.println(result);
+		return "/employee/AddNewEmp";
+	}//method 
+}//class
+------------------------------------------------------------------------------------------
+package com.itcs.beans;
+
+import java.io.Serializable;
+
+import org.apache.log4j.Logger;
+
+public class Employee implements Serializable {
+	private static final Logger logger = Logger.getLogger(Employee.class);
+	private String payrollId;
+	private String title;
+	private String eeSurname;
+	private String eeFname;
+	private String eeSFname;
+	//private EmpAddress add;
+	private String countery;
+	private Long eeMobile;
+	private String eePerEmail;
+	private String eeDob;
+	private String gender;
+	private String eeNiNumber;
+	private String eePayFreq;
+
+	public String getPayrollId() {
+		return payrollId;
+	}
+
+	public void setPayrollId(String payrollId) {
+		this.payrollId = payrollId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getEeSurname() {
+		return eeSurname;
+	}
+
+	public void setEeSurname(String eeSurname) {
+		this.eeSurname = eeSurname;
+	}
+
+	public String getEeFname() {
+		return eeFname;
+	}
+
+	public void setEeFname(String eeFname) {
+		this.eeFname = eeFname;
+	}
+
+	public String getEeSFname() {
+		return eeSFname;
+	}
+
+	public void setEeSFname(String eeSFname) {
+		this.eeSFname = eeSFname;
+	}
+
+	/*public EmpAddress getAdd() {
+		return add;
+	}
+
+	public void setAdd(EmpAddress add) {
+		this.add = add;
+	}*/
+
+	public String getCountery() {
+		return countery;
+	}
+
+	public void setCountery(String countery) {
+		this.countery = countery;
+	}
+
+	public Long getEeMobile() {
+		return eeMobile;
+	}
+
+	public void setEeMobile(Long eeMobile) {
+		this.eeMobile = eeMobile;
+	}
+
+	public String getEePerEmail() {
+		return eePerEmail;
+	}
+
+	public void setEePerEmail(String eePerEmail) {
+		this.eePerEmail = eePerEmail;
+	}
+
+	public String getEeDob() {
+		return eeDob;
+	}
+
+	public void setEeDob(String eeDob) {
+		this.eeDob = eeDob;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getEeNiNumber() {
+		return eeNiNumber;
+	}
+
+	public void setEeNiNumber(String eeNiNumber) {
+		this.eeNiNumber = eeNiNumber;
+	}
+
+	public String getEePayFreq() {
+		return eePayFreq;
+	}
+
+	public void setEePayFreq(String eePayFreq) {
+		this.eePayFreq = eePayFreq;
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [payrollId=" + payrollId + ", title=" + title + ", eeSurname=" + eeSurname + ", eeFname="
+				+ eeFname + ", eeSFname=" + eeSFname + ", countery=" + countery + ", eeMobile=" + eeMobile
+				+ ", eePerEmail=" + eePerEmail + ", eeDob=" + eeDob + ", gender=" + gender + ", eeNiNumber="
+				+ eeNiNumber + ", eePayFreq=" + eePayFreq + "]";
+	}
+
+	
+
+}
+--------------------------------------------------------------
+ package com.itcs.beans;
+
+ public class EmpAddress {
+
+	 private String address;
+	    private Integer code;
+		public String getAddress() {
+			return address;
+		}
+		public void setAddress(String address) {
+			this.address = address;
+		}
+		public Integer getCode() {
+			return code;
+		}
+		public void setCode(Integer code) {
+			this.code = code;
+		}
+		@Override
+		public String toString() {
+			return "EmpAddress [address=" + address + ", code=" + code + "]";
+		}
+	    
+		
+	    
+}
+
