@@ -1,0 +1,26 @@
+package com.CoreJava;
+
+import java.util.Locale;
+
+public class LanguageLocal {
+
+	public static void main(String[] args) {
+       LanguageLocal obj = new LanguageLocal();
+   	obj.run();
+       
+	}//main
+
+	 public void run() {
+
+			String[] locales = Locale.getISOCountries();
+
+			for (String countryCode : locales) {
+          //System.out.println(countryCode);
+				Locale obj = new Locale("", countryCode);
+				 System.out.println(obj.getDisplayCountry());
+				/*System.out.println("Country Code = " + obj.getCountry() 
+					+ ", Country Name = " + obj.getDisplayCountry());
+*/
+			}
+		    }//run method
+}//class
