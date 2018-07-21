@@ -1,0 +1,90 @@
+<h2>Pagination</h2>
+											<ul class="pagination">
+												<li><a th:href="@{${T(com.iss.aepm.utils.AePrefixConstants).AE_URL_PREFIX}+'/employee/emp-details/genlife/1'}">1</a></li>
+												<li><a th:href="@{${T(com.iss.aepm.utils.AePrefixConstants).AE_URL_PREFIX}+'/employee/emp-details/genlife/2'}">2</a></li>
+												<li><a th:href="@{${T(com.iss.aepm.utils.AePrefixConstants).AE_URL_PREFIX}+'/employee/emp-details/genlife/3'}">3</a></li>
+												<li><a th:href="@{${T(com.iss.aepm.utils.AePrefixConstants).AE_URL_PREFIX}+'/employee/emp-details/genlife/4'}">4</a></li>
+												<li><a th:href="@{${T(com.iss.aepm.utils.AePrefixConstants).AE_URL_PREFIX}+'/employee/emp-details/genlife/5'}">5</a></li>
+											                        
+											</ul>
+ ------------------------------------------------------------------------------------------------------------------------------                     
+@RequestMapping(value = "/employee/emp-details/genlife/{pageid}")
+	public String GenlifeEmployeeList(@PathVariable int pageid ,Model model) throws Exception {		
+		logger.debug("Entered GenlifeEmployeeList method...");
+		System.out.println("ENTERED GENLIFE EMPLOYEE LIST METHOD CONTROLLER CLASS");
+		  int total=5; 
+		  //paginations logic
+		   if(pageid==1){}  
+	        else{  
+	            pageid=(pageid-1)*total+1;  
+	        }  
+		List<AepmEmpListBean> empListBean=aepmEmployeeListService.getGenlifeEmployeeList(pageid,total);
+		System.out.println("task cmplt");
+		model.addAttribute("emp", empListBean);
+		//return "/employee/GenlifeEmpList";
+		return "/aepm/others/GenlifeEmpList";  
+		//sadm_aepm_emp_consolidated_pen_con_5
+	}
+  ----------------------------------------------------------------------------------
+  
+	class EmpListMapper1 implements RowMapper<AepmEmpListBean> {
+		public AepmEmpListBean mapRow (ResultSet rsEe, int rowNum) throws SQLException {
+			
+			AepmEmpListBean empListBean = new AepmEmpListBean();
+			
+			empListBean.setEeWksNo(rsEe.getString("ee_wks_no"));
+			empListBean.setEeSurname(rsEe.getString("ee_surname"));
+			/*empListBean.setEeFname(rsEe.getString("ee_fname"));
+			empListBean.setEeSFname(rsEe.getString("ee_sfname"));*/
+			empListBean.setEeNiNumber(rsEe.getString("ee_ni_number"));
+			empListBean.setEeDobDT(rsEe.getDate("ee_dob")); 
+			empListBean.setEePayFreq(CodeMapUtil.getCodeValue(rsEe.getString("ee_pay_freq"), CodeMapType.PAY_FREQ));
+			empListBean.setCurUserEmail(rsEe.getString("ee_per_email"));
+			/*empListBean.setEeLastAssessPeriod(rsEe.getInt("ee_last_assess_period"));
+			if(StringUtils.isNotEmpty(rsEe.getString("ee_last_assess_year"))) {
+				empListBean.setEeLastAssessYear(TaxYearUtils.getFormattedTaxYear(rsEe.getString("ee_last_assess_year"), "-"));
+			}
+			empListBean.setAssessStatus(rsEe.getString("assess_status"));
+			empListBean.setEeID(rsEe.getInt("ee_id"));
+			empListBean.setTotDBRecCount(rsEe.getInt("tot_rows"));
+			*/
+			return empListBean;
+		}
+	}
+	@Override
+	@SuppressWarnings({ "unchecked" })
+	public List<AepmEmpListBean> fetchGenlifeEmployeeList(Integer pageid, Integer total) {
+		logger.debug("Entered fetchGenlifeEmployeeList...");
+		System.out.println("ENTERED FETCH GENLIFE EMPLOYEE LIST DAO CLASSS");
+		SimpleJdbcCall jc = getSimpleJdbcCall("SAEPM_EE_5").returningResultSet("refcursor", new EmpListMapper1());
+		SqlParameterSource inparam = new MapSqlParameterSource()
+				.addValue("start_page", pageid)
+				.addValue("total", total)
+				;
+		System.out.println("task cmplt");
+		
+		Map<String, Object> m = jc.execute(inparam);
+		
+		return ((List<AepmEmpListBean>) m.get("refcursor"));
+		//return null;
+	}
+  
+  -----------------------------------------------------------------------------------
+   CREATE OR REPLACE FUNCTION SAEPM_EE_3 ("start_page" integer, "total" integer)
+RETURNS REFCURSOR
+LANGUAGE PLPGSQL
+AS
+$BODY$
+
+DECLARE saepmuniaeemplist REFCURSOR;
+BEGIN
+OPEN saepmuniaeemplist FOR
+SELECT acav.ee_wks_no,acav.ee_ni_number,acav.ee_dob,acav.ee_surname,acav.ee_pay_freq,acav.ee_addr_pcode 
+FROM aepm_csv_assess_values acav
+WHERE ee_wks_no LIKE 'GEN%
+ LIMIT total OFFSET start_page;
+RETURN saepmuniaeemplist;
+END;
+
+$BODY$
+;
