@@ -1,0 +1,33 @@
+procedure in PostgreSql
+----------------------------------
+CREATE OR REPLACE FUNCTION getEmpById(IN id character(10) , OUT ee_title character(20), OUT surename character(20))
+LANGUAGE PLPGSQL
+AS
+$BODY$
+begin
+select title , eesurname into ee_title, surename  from emp111 where payrollid=id;
+      --db table name         --
+end;
+
+$BODY$
+;
+---------------------------------------------------------------------------
+dao layer
+public List<Employee> fetch() {
+		logger.debug("ENTERED fetch METHOD DAO  CLASS.........................");
+		System.out.println("FETCH METHOD==="+sjc);
+		//set PRocedure name
+		sjc.setProcedureName("getEmpById"); //both method r working postgreSql 
+		//sjc.withFunctionName("getEmpById");
+		MapSqlParameterSource in=new MapSqlParameterSource();
+		in.addValue("id", 65465);
+				//execute PL/SQL Procedure
+				Map<String, Object> m =sjc.execute(in);
+		         Employee emp = new Employee();
+		         emp.setTitle((String)m.get("ee_title"));
+		         emp.setEeSurname((String)m.get("surename"));
+		         System.out.println(emp);
+				return null;
+				
+	}//method
+
