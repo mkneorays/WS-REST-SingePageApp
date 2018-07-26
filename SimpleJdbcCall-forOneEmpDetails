@@ -6,7 +6,7 @@ AS
 $BODY$
 begin
 select title , eesurname into ee_title, surename  from emp111 where payrollid=id;
-      --db table name         --
+      --db table name         --out param
 end;
 
 $BODY$
