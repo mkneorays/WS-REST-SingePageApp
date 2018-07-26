@@ -1,0 +1,109 @@
+function in postgreSql
+--------------------------------
+CREATE OR REPLACE FUNCTION emp_list1 ()
+RETURNS REFCURSOR
+LANGUAGE PLPGSQL
+AS
+$BODY$
+
+DECLARE saepmuniaeemplist REFCURSOR;
+BEGIN
+OPEN saepmuniaeemplist FOR
+SELECT emp.payrollid,emp.title,emp.countery,emp.eemobile,emp.eefname,emp.eesurname 
+FROM emp111 emp;
+RETURN saepmuniaeemplist;
+END;
+
+$BODY$
+;
+---------------------------------------------------------------------
+DaoLayer
+@SuppressWarnings("unchecked")
+	@Transactional(readOnly=true)
+	public List<Employee> fetch() {
+		logger.debug("ENTERED fetch METHOD DAO  CLASS.........................");
+		System.out.println("FETCH METHOD==="+sjc);
+		//set PRocedure name
+		sjc.withFunctionName("emp_list1").returningResultSet("refcursor",new  EmpListMapper1());
+		
+		/*MapSqlParameterSource in=new MapSqlParameterSource();
+		in.addValue("id", 65465);*/
+				//execute PL/SQL Procedure
+				Map<String, Object> m =sjc.execute();
+				System.out.println("map=="+m);
+				System.out.println("dao ="+(List<Employee>) m.get("refcursor")); 
+				return null;
+	}//method
+  
+  class EmpListMapper1 implements RowMapper<Employee> {
+		public Employee mapRow (ResultSet rs, int rowNum) throws SQLException {
+			System.out.println("IMPLEMENTS METHOD");
+			Employee emp = new Employee();
+			emp.setPayrollId(rs.getString("payrollid"));
+			emp.setTitle(rs.getString("title"));
+			emp.setCountery(rs.getString("countery"));
+			emp.setEeMobile(rs.getLong("eemobile"));
+			emp.setEeFname(rs.getString("eefname"));
+			emp.setEeSurname(rs.getString("eesurname"));
+			System.out.println(emp);
+			return emp;
+		}
+	}
+  
+  ------------------------------------------------------------------------------
+  spring-cnfgs.xml file
+  
+  <?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<mvc:annotation-driven />
+	<tx:annotation-driven transaction-manager="txm"/>
+	<context:component-scan base-package="com.itcs" />
+	
+	<bean id="txm" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.dbuser}" />
+		<property name="password" value="${jdbc.dbpassword}" />
+	</bean>
+     
+     <bean id="jt" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+      <constructor-arg ref="dataSource"/>
+     </bean>
+     
+     <bean id="sjc" class="org.springframework.jdbc.core.simple.SimpleJdbcCall">
+      <constructor-arg ref="dataSource"/>
+     </bean>
+	<bean id="templateResolver"
+		class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/thl/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML5" />
+	</bean>
+
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+	</bean>
+   <context:property-placeholder location="classpath:database.properties"/>
+</beans>
+-------------------------------------------------------------------------------------------
+
+note=for getting date from cursor transaction is must and @Transactional annotations is also requried kk. 
+	
