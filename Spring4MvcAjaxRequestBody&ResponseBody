@@ -1,0 +1,239 @@
+ package com.itcs.bean;
+ 
+public class Employee {
+ 
+	private String id;
+ 
+	private String firstName;
+ 
+	private String lastName;
+ 
+	private int age;
+ 
+	private double salary;
+ 
+	public Employee() {
+		super();
+	}
+ 
+	public String getId() {
+		return id;
+	}
+ 
+	public void setId(String id) {
+		this.id = id;
+	}
+ 
+	public String getFirstName() {
+		return firstName;
+	}
+ 
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+ 
+	public String getLastName() {
+		return lastName;
+	}
+ 
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+ 
+	public int getAge() {
+		return age;
+	}
+ 
+	public void setAge(int age) {
+		this.age = age;
+	}
+ 
+	public double getSalary() {
+		return salary;
+	}
+ 
+	public void setSalary(double salary) {
+		this.salary = salary;
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", age=" + age
+				+ ", salary=" + salary + "]";
+	}
+ 
+}
+----------------------------------------------------------------
+ package com.itcs.controller;
+ 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.itcs.bean.Employee;
+ 
+
+ 
+@Controller
+//@RequestMapping(value = "/json")
+public class JsonRequestController {
+	
+	@RequestMapping(value = "/index")
+	public String index()
+	{
+		System.out.println("first method");
+		return "welcome";
+	}
+ 
+	@RequestMapping(value = "/postEmployee", method = RequestMethod.POST, produces = "application/json")
+	//public @ResponseBody Employee postEmployeeData(@RequestBody Employee employee) {
+		public @ResponseBody Employee postEmployeeData(@ModelAttribute Employee employee) {
+		System.out.println("second method"+employee);
+		double newSalary = employee.getSalary() + 1000;
+		employee.setSalary(newSalary);
+ 
+		return employee;
+	}
+	
+	@RequestMapping(value = "/addEmployee")
+	public String showEmployeePage(){
+		System.out.println("third method");
+		return "addEmployee";
+	}
+			
+}
+---------------------------------------------------------------
+
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<html>
+<head>
+<title>Spring MVC - JSON Request Sample</title>
+<script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+</head>
+<body>
+	<h2>Enter Employee Details</h2>
+	<table>
+		<tr>
+			<td>Id</td>
+			<td><input type="text" id="id"></td>
+		</tr>
+		<tr>
+			<td>First Name</td>
+			<td><input type="text" id="firstName"></td>
+		</tr>
+		<tr>
+			<td>Last Name</td>
+			<td><input type="text" id="lastName"></td>
+		</tr>
+		<tr>
+			<td>Age</td>
+			<td><input type="text" id="age"></td>
+		</tr>
+		<tr>
+			<td>Salary</td>
+			<td><input type="text" id="salary"></td>
+		</tr>
+		<tr>
+			<td colspan="2"><input type="button" id="submit" value="Submit" /></td>
+		</tr>
+	</table>
+	
+	<hr/>
+	<div id="displayDiv" style="display:none"><h3>JSON Data returned from Server after processing</h3>
+		<div id="processedData"></div>
+	</div>
+<script>
+	jQuery(document).ready(function($) {
+ 
+		$("#submit").click(function(){
+			var employeeData = {};
+			employeeData["id"] = $("#id").val();
+			employeeData["firstName"] = $("#firstName").val();
+			employeeData["lastName"] = $("#lastName").val();
+			employeeData["age"] = $("#age").val();
+			employeeData["salary"] = $("#salary").val();
+			alert("hiiii");
+			alert(employeeData.id);
+			$.ajax({
+				type : "POST",
+				contentType : "application/json",
+				url : "postEmployee",
+				data : JSON.stringify(employeeData),
+				dataType : 'json',				
+				success : function(data) {
+					$('#processedData').html(JSON.stringify(data));
+					$('#displayDiv').show();
+				}
+			});
+		});
+ 
+	});
+</script>	
+ 
+</body>
+</html>
+-------------------------------------------------------------------
+package com.itcs.cnfgs;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
+
+public class MyWebAppInitializer implements WebApplicationInitializer {
+
+	/*public void onStartup(final ServletContext servletContext) throws ServletException {
+		System.out.println("servlet class");
+		AnnotationConfigWebApplicationContext root = new AnnotationConfigWebApplicationContext();
+		root.setServletContext(servletContext);
+		//root.scan("com.itcs.cnfgs");
+		root.refresh();
+
+		final Dynamic servlet = servletContext.addServlet("spring", new DispatcherServlet(root));
+		servlet.setLoadOnStartup(1);
+		servlet.addMapping("/");
+	}*/
+	
+	 public void onStartup(ServletContext container) throws ServletException {
+		   System.out.println("servlet class");
+		        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+		        ctx.register(ControllerConfiguration.class);
+		        ctx.setServletContext(container);
+		        ctx.scan("com.itcs.cnfgs");
+		        ctx.refresh();
+		        ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));
+		 
+		        servlet.setLoadOnStartup(1);
+		        servlet.addMapping("/");
+		    }
+
+}-------------------------------------------------
+package com.itcs.cnfgs;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages = "com.itcs.controller")
+public class ControllerConfiguration {
+	
+	@Bean
+	public InternalResourceViewResolver configureInternalResourceViewResolver() {
+		System.out.println("VR");
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setPrefix("/WEB-INF/jsp/");
+		resolver.setSuffix(".jsp");
+		return resolver;
+	}
+
+	
+	
+}
