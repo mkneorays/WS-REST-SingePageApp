@@ -1,0 +1,317 @@
+
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<html>
+<head>
+<title>Spring MVC - JSON Request Sample</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- <script type="text/javascript">  //its working with @ModelAttribute 
+        function doAjaxPost() {
+        	alert("hiiii");
+        	 var id = $('#id').val();
+        	 var firstname = $('#firstName').val();
+        	 var lastname = $('#lastName').val();
+        	 var age = $('#age').val();
+        	 var salary = $('#salary').val();
+        	 alert("hiiii  "+ salary);
+        // get the form values
+        $.ajax({
+        type: "POST",
+        url: "/FormAjax/empmodel",
+        //url: "/FormAjax/emprequest",
+        data: "id=" + id + "&firstName=" + firstname +"&lastName=" + lastname+"&age=" + age+"&salary=" + salary,
+        success: function(response){
+        // we have the response
+        alert('success: ' + response);
+        $('#processedData').html(JSON.stringify(response));
+		$('#displayDiv').show();
+        },
+        error: function(e){
+
+        alert('Error: ' + e);
+
+        }
+        });
+        }
+        </script> -->
+ <script type="text/javascript">
+       /*  function doAjaxPost() {
+        	alert("hiiii");
+        	var employeeData = {};
+			employeeData["id"] = $("#id").val();
+			employeeData["firstName"] = $("#firstName").val();
+			employeeData["lastName"] = $("#lastName").val();
+			employeeData["age"] = $("#age").val();
+			employeeData["salary"] = $("#salary").val();
+        	 alert("hiiii  "+ employeeData.salary);
+        // get the form values
+        $.ajax({
+        type: "POST",
+        url: "/FormAjax/emprequest",
+        contentType: "application/json" ,
+        Accept: "application/json" ,
+        context: document.body,
+        data : JSON.stringify(employeeData),
+       success: function(response){
+       	console.log(response);
+        // we have the response
+        alert('success: ' + response);
+        $('#processedData').html(JSON.stringify(response));
+		$('#displayDiv').show();
+        },
+        error: function(e){
+          	console.log("ERROR: ", e);
+        alert('Error: ' + e);
+
+        }
+        });
+        } 
+        	// Reset FormData after Posting
+            	resetData();
+         
+            }
+            
+            function resetData(){
+            	$("#firstname").val("");
+            	$("#lastname").val("");
+            }
+        */
+        </script>
+ 
+ </head>
+<body>
+	<h2>Enter Employee Details</h2>
+	<%-- <form action="empmodel" method="post" name="dddd"> --%>
+	<form method="post" name="dddd"  id="customerForm">
+    <table>
+     <tr>
+        <td>ID</td>
+        <td><input id="id" type="text" name="id" /></td>
+      </tr>
+      <tr>
+        <td>First Name</td>
+        <td><input id="firstName" type="text" name="firstName"/></td>
+      </tr>
+      <tr>
+        <td>Last Name</td>
+        <td><input id="lastName" type="text" name="lastName" /></td>
+      </tr>
+      <tr>
+        <td>Age</td>
+        <td><input id="age" type="text" name="age" /></td>
+      </tr>
+      <tr>
+        <td>Salary</td>
+        <td><input id="salary" type="text" name="salary" /></td>
+      </tr>
+      <tr>
+        <td></td>
+        <!-- <td><button type="submit" onclick="doAjaxPost()">Submit</button></td> -->
+        <td><button type="submit">Submit</button></td>
+      </tr>
+    </table>
+  </form>
+	<hr/>
+	<div id="displayDiv" style="display:none"><h3>JSON Data returned from Server after processing</h3>
+		<div id="processedData"></div>
+	</div>
+	
+<!-- <script>   //working fine only for @ModelAttribute not @RequestBody
+	jQuery(document).ready(function($) {
+		 $('button[type=submit]').click(function(e) {
+			 //Prevent default submission of form
+		      e.preventDefault();
+		      //Remove all errors
+		      $('input').next().remove();
+			 
+		          $.ajax({
+					type : 'POST',
+					contentType:'application/json',
+					accept : 'application/json',
+					url : '/FormAjax/emprequest',
+					 data : $('form[name=dddd]').serialize(),
+					dataType : 'json',
+					
+					success : function(response) { 
+					    alert("aaaaaa"+response); 	
+					
+		            /*  $.post({
+		           url: "/FormAjax/empmodel",
+		         data : $('form[name=dddd]').serialize(),
+		         //contentType:'application/json',  //dont used with @ModelAttribute always used @RequestBody
+		         dataType : 'JSON',
+		          success : function(response) {  
+		        	  alert("aaaaaa"+response); */
+		        	  //Set response
+		               $('#processedData').text(JSON.stringify(response));
+		               $('#displayDiv').show();
+					//$('#processedData').html(JSON.stringify(response));
+					//$('#displayDiv').show();
+				},
+		             error: function(e){
+
+		                 alert('Error: ' + e);
+
+		                 }
+			});
+		});
+ 
+	});
+</script>	 -->
+ 
+</body>
+</html>
+---------------------------------------------------------------------------------
+ package com.itcs.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itcs.bean.Employee;
+import com.itcs.bean.Response;
+ 
+
+ 
+@Controller
+public class JsonRequestController {
+	
+	@RequestMapping(value = "/index")
+	public String index()
+	{
+		System.out.println("first method");
+		return "welcome";
+	}
+ 
+	@RequestMapping(value = "/empmodel", method = RequestMethod.POST,produces = "application/json")
+	public @ResponseBody String postEmployeeData(@ModelAttribute Employee employee) {
+		String  jsonString=null;
+		String newSalary = employee.getSalary() + 1000;
+		employee.setSalary(newSalary);
+        System.out.println("Model Attribute method "+employee);
+        ObjectMapper obj=new ObjectMapper();
+		try {
+			 jsonString=obj.writeValueAsString(employee);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			 e.printStackTrace();
+		}
+		System.out.println("wwwwwww  "+jsonString);
+		return jsonString;
+	}
+	
+	@RequestMapping(value = "/emprequest", method = RequestMethod.POST)  //@RequestBody is not working properly with jquery ajax
+	public @ResponseBody Response porstEmployeeData(@RequestBody Employee employee) {
+		System.out.println("second method @RequestBody  "+employee);
+		String newSalary = employee.getSalary() + 1000;
+		// Create Response Object
+				Response response = new Response("Done", employee);
+		employee.setSalary(newSalary);
+ 
+		return response;
+	}//method	
+}//class
+-------------------------------------------------------------------------------------
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.itcs</groupId>
+  <artifactId>FormAjax</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>FormAjax Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+		<spring.version>4.2.2.RELEASE</spring.version>
+		<jstl.version>1.2</jstl.version>
+		<servletapi.version>3.1.0</servletapi.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<!-- Need this for json to/from object -->
+		 <!-- Jackson API -->
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-databind</artifactId>
+     <version>2.6.3</version>
+   </dependency>
+
+		<!-- JSTL for views -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>${jstl.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servletapi.version}</version>
+			<scope>provided</scope>
+		</dependency>
+			</dependencies>
+  <build>
+    <finalName>FormAjax</finalName>
+  </build>
+</project>
+---------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+ 
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+		
+	<context:component-scan base-package="com.itcs.controller" />
+
+   <bean id="view" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+   <property name="prefix" value="/WEB-INF/jsp/"/>
+   <property name="suffix" value=".jsp"/>
+   </bean>
+
+</beans>
+--------------------------------------------------------------------------------
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <servlet>
+		<servlet-name>servlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet
+
+		</servlet-class>
+         <init-param>		
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				/WEB-INF/servlet-config.xml	
+			</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	Map all requests to the DispatcherServlet for handling
+	<servlet-mapping>
+		<servlet-name>servlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping> 
+	
+</web-app>
+
+
