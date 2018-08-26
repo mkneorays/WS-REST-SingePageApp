@@ -1,37 +1,58 @@
 <html>
 <head>
-	<title>Datepicker Example</title>
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css" rel="stylesheet" id="bootstrap-css">
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<title>Datepicker Example</title>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">	
+	<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>   its not requried -->
+	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css" rel="stylesheet">
 </head>
-<body>
-	<div class="container">
+
+<body id="col">
+
+<h2>Hello World!</h2>
+<div class="container">
 		<div class="row">
 			<h2>Bootstrap Datepicker</h2>
 		</div>
+		<form action="save" method="get">
 		<div class="row">
-	        <div class='col-sm-6'>
-	        	<form>
+	        <div class='col-sm-3'>
+	        	Name: <input type="text" name="name"><br><br>
 		            <div class="form-group">
-		                <div class='input-group date' id='datepicker'>
-		                    <input type='text' class="form-control" />
+		                <div class='input-group date' id='date1'>
+		                    <input type='text' class="form-control" name="first"/>
 		                    <span class="input-group-addon">
 		                        <span class="glyphicon glyphicon-calendar"></span>
 		                    </span>
 		                </div>
 		            </div>
-		        </form>
+		            <br/>
+		             <div class="form-group">
+		                <div class='input-group date' id='date2'>
+		                    <input type='text' class="form-control" name="second"/>
+		                    <span class="input-group-addon">
+		                        <span class="glyphicon glyphicon-calendar"></span>
+		                    </span>
+		                </div>
+		            </div>
 	        </div>
 	    </div>
+	    <input type="submit" value="Submit">
+	    </form>
 	</div>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
-	<script >
-	    $(function () {
-	        $('#datepicker').datepicker({
-	            format: "dd/mm/yyyy",
-	            autoclose: true,
+	<script src="./js/date.js"></script>
+	<!-- <script src="./js/jquery-3.3.1.min.js"></script> -->
+	
+	 <link rel="stylesheet" href="./css/body.css">
+	 <!-- <link rel="stylesheet" href="./css/bootstrap.min.css"> -->
+	<!-- <script >
+	   $(function () {
+	        $('#date1').datepicker({
+	            format: "dd-mm-yyyy",
 	            todayHighlight: true,
 		        showOtherMonths: true,
 		        selectOtherMonths: true,
@@ -40,7 +61,58 @@
 		        changeYear: true,
 		        orientation: "button"
 	        });
-	    });
-	</script>
+	        $('#date2').datepicker({
+	            format: "dd-mm-yyyy",
+	            todayHighlight: true,
+		        showOtherMonths: true,
+		        selectOtherMonths: true,
+		        autoclose: true,
+		        changeMonth: true,
+		        changeYear: true,
+		        orientation: "button"
+	        });
+	    }); 
+	</script> -->
 </body>
 </html>
+<!-- 
+folder--webapp
+   |--css
+       |--body.css
+       |--bootstrap.min.css
+   |--js
+       |--date.js
+       |--bootstrap.min.js
+ -->
+----------------------------------------------------------------------------------------
+date.css
+---------
+$(function () {
+	        $('#date1').datepicker({
+	            format: "dd-mm-yyyy",
+	            todayHighlight: true,
+		        showOtherMonths: true,
+		        selectOtherMonths: true,
+		        autoclose: true,
+		        changeMonth: true,
+		        changeYear: true,
+		        orientation: "button"
+	        });
+	        $('#date2').datepicker({
+	            format: "dd-mm-yyyy",
+	            todayHighlight: true,
+		        showOtherMonths: true,
+		        selectOtherMonths: true,
+		        autoclose: true,
+		        changeMonth: true,
+		        changeYear: true,
+		        orientation: "button"
+	        });
+	    }); 
+
+--------------------------------------------------------------------------
+body.css
+--------
+#col{
+	color:red;
+}
