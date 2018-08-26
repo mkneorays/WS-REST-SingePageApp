@@ -1,0 +1,439 @@
+package com.itcs.beans;
+
+import java.util.Date;
+
+import com.itcs.valid.DateAnno;
+import com.itcs.valid.Phone;
+
+public class Person {
+
+	
+	private int id;
+	@Phone
+	private String name;
+	//@NotEmpty
+	private Float mob;
+	//@NotEmpty
+	private Double amount;
+	//@NotEmpty
+	private Character gender;
+    private String course;
+	//@NotEmpty  //may not be empty coming by default
+	private Date dob;
+	@DateAnno
+	private Date doj;
+
+	public int getId() {
+		return id;
+	}
+	public String getCourse() {
+		return course;
+	}
+	public void setCourse(String course) {
+		this.course = course;
+	}
+	public Character getGender() {
+		return gender;
+	}
+	public void setGender(Character gender) {
+		this.gender = gender;
+	}
+	public Float getMob() {
+		return mob;
+	}
+	public void setMob(Float mob) {
+		this.mob = mob;
+	}
+	public Double getAmount() {
+		return amount;
+	}
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Date getDob() {
+		return dob;
+	}
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+	public Date getDoj() {
+		return doj;
+	}
+	public void setDoj(Date doj) {
+		this.doj = doj;
+	}
+	@Override
+	public String toString() {
+		return "Person [id=" + id + ", name=" + name + ", mob=" + mob + ", amount=" + amount + ", gender=" + gender
+				+ ", course=" + course + ", dob=" + dob + ", doj=" + doj + "]";
+	}
+		
+}
+-------------------------------------------------------------------------------------
+package com.itcs.valid;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+
+import javax.validation.Constraint;
+import javax.validation.Payload;
+
+@Documented
+@Constraint(validatedBy = PhoneValidator.class)
+@Target( { ElementType.METHOD, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Phone {
+
+    
+   String message() default "Please pass 10 digit Phone no";
+    
+   Class<?>[] groups() default {};
+    
+   Class<? extends Payload>[] payload() default {};
+     
+}//class
+----------------------------------------------------------------------------------------------
+package com.itcs.valid;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+public class PhoneValidator implements ConstraintValidator<Phone, String> {
+
+	public void initialize(Phone paramA) {
+		System.out.println("custom valid 1");
+	}
+
+	public boolean isValid(String phoneNo, ConstraintValidatorContext ctx) {
+		if(phoneNo == null){
+			System.out.println("custom valid 2");
+			return false;
+		}
+		System.out.println("custom valid 3");
+		//validate phone numbers of format "1234567890"
+       if (phoneNo.matches("\\d{10}"))
+    	   return true;
+       //validating phone number with -, . or spaces
+       else if(phoneNo.matches("\\d{3}[-\\.\\s]\\d{3}[-\\.\\s]\\d{4}"))
+    	   return true;
+       //validating phone number with extension length from 3 to 5
+       else if(phoneNo.matches("\\d{3}-\\d{3}-\\d{4}\\s(x|(ext))\\d{3,5}"))
+    	   return true;
+       //validating phone number where area code is in braces ()
+       else if(phoneNo.matches("\\(\\d{3}\\)-\\d{3}-\\d{4}"))
+    	   return true;
+       //return false if nothing matches the input
+       else return false;
+	}
+
+}
+-------------------------------------------------------------------------------------------------------
+package com.itcs.valid;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+
+import javax.validation.Constraint;
+import javax.validation.Payload;
+
+@Documented
+@Constraint(validatedBy = DateValidator.class)
+@Target( { ElementType.METHOD, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DateAnno {
+
+    
+   String message() default "Please pass dd-MM-yyyy";
+    
+   Class<?>[] groups() default {};
+    
+   Class<? extends Payload>[] payload() default {};
+     
+}//class
+--------------------------------------------------------------------------------------------------------
+package com.itcs.valid;
+
+import java.util.Date;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+public class DateValidator implements ConstraintValidator<DateAnno, Date> {
+
+	public void initialize(Phone paramA) {
+		System.out.println("custom valid 1");
+	}
+
+	public boolean isValid(Date value, ConstraintValidatorContext context) {
+		if(value == null){
+			System.out.println("custom valid 2");
+			return false;
+		}
+		System.out.println("custom valid 3");
+		//validate phone numbers of format "1234567890"
+            return false;
+	}
+
+}
+--------------------------------------------------------------------------------------------------------------
+package com.itcs.controller;
+
+import java.util.Date;
+
+import javax.validation.Valid;
+
+import java.text.SimpleDateFormat;
+
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.itcs.beans.Person;
+
+@Controller
+public class PersonController {
+
+	@InitBinder
+	public void dateConvertor(WebDataBinder binder) {
+		System.out.println("date convertor");
+		SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
+		binder.registerCustomEditor(Date.class,new CustomDateEditor(sdf, true));				
+	}
+	
+	@RequestMapping("/home.htm")
+	public String form1Method(@ModelAttribute("person") Person person) {
+		System.out.println("first controller method  ");
+		return "home";
+	}// method
+	
+	@RequestMapping("/person.htm")
+	public String personMethod(@ModelAttribute @Valid Person person,BindingResult error) {
+		System.out.println("second controller method  "+person);
+		if(error.hasErrors()) {
+			System.out.println("error method");
+			return "home";
+		}
+		return "save";
+	}// method
+}
+-------------------------------------------------------------------------------------------------
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>Person Details</h1>
+<form method="get"  action="person.htm" th:object="${person}">
+<!-- <div  th:class="${#fields.hasErrors('id')} ? 'form-group has-error' :'form-group' "> -->
+Id : <input type="text" name="id"/>
+<!-- <p th:errors="*{id}" class="help-block"></p> -->
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('name')} ? 'form-group has-error' :'form-group' ">
+Name : <input type="text" name="name"/>
+<p th:errors="*{name}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('mob')} ? 'form-group has-error' :'form-group' ">
+Mob No : <input type="text" name="mob"/>
+<p th:errors="*{mob}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('amount')} ? 'form-group has-error' :'form-group' ">
+Amount : <input type="text" name="amount"/>
+<p th:errors="*{amount}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('gender')} ? 'form-group has-error' :'form-group' ">
+Gender : <input type="radio" name="gender" value="m"/>Male <input type="radio" name="gender" value="f"/>Female
+<p th:errors="*{gender}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('course')} ? 'form-group has-error' :'form-group' ">
+Course : <select name="course">
+          <option value="">Select</option>
+          <option value="java">JAVA</option>
+          <option value=".net">.NET</option>
+           <option value="php">PHP</option>
+         </select>
+         <p th:errors="*{course}" class="help-block"></p>
+         </div><br/><br/>
+         <div  th:class="${#fields.hasErrors('dob')} ? 'form-group has-error' :'form-group' ">
+DOB : <input type="text" name="dob"/>
+<p th:errors="*{dob}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('doj')} ? 'form-group has-error' :'form-group' ">
+DOJ : <input type="text" name="doj"/>
+<p th:errors="*{doj}" class="help-block"></p>
+</div><br/><br/>
+
+ <input type="submit" value="Submit"/><br/><br/>
+</form>
+
+</body>
+</html>
+---------------------------------------------------------------------------
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>Person Details</h1>
+<form method="get"  action="person.htm" th:object="${person}">
+<!-- <div  th:class="${#fields.hasErrors('id')} ? 'form-group has-error' :'form-group' "> -->
+Id : <input type="text" name="id"/>
+<!-- <p th:errors="*{id}" class="help-block"></p> -->
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('name')} ? 'form-group has-error' :'form-group' ">
+Name : <input type="text" name="name"/>
+<p th:errors="*{name}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('mob')} ? 'form-group has-error' :'form-group' ">
+Mob No : <input type="text" name="mob"/>
+<p th:errors="*{mob}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('amount')} ? 'form-group has-error' :'form-group' ">
+Amount : <input type="text" name="amount"/>
+<p th:errors="*{amount}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('gender')} ? 'form-group has-error' :'form-group' ">
+Gender : <input type="radio" name="gender" value="m"/>Male <input type="radio" name="gender" value="f"/>Female
+<p th:errors="*{gender}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('course')} ? 'form-group has-error' :'form-group' ">
+Course : <select name="course">
+          <option value="">Select</option>
+          <option value="java">JAVA</option>
+          <option value=".net">.NET</option>
+           <option value="php">PHP</option>
+         </select>
+         <p th:errors="*{course}" class="help-block"></p>
+         </div><br/><br/>
+         <div  th:class="${#fields.hasErrors('dob')} ? 'form-group has-error' :'form-group' ">
+DOB : <input type="text" name="dob"/>
+<p th:errors="*{dob}" class="help-block"></p>
+</div><br/><br/>
+<div  th:class="${#fields.hasErrors('doj')} ? 'form-group has-error' :'form-group' ">
+DOJ : <input type="text" name="doj"/>
+<p th:errors="*{doj}" class="help-block"></p>
+</div><br/><br/>
+
+ <input type="submit" value="Submit"/><br/><br/>
+</form>
+
+</body>
+</html>
+-----------------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:component-scan base-package="com.itcs" />
+      <mvc:annotation-driven></mvc:annotation-driven>
+	<bean id="templateResolver"
+		class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML5" />
+	</bean>
+ 
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+ 
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+	</bean>
+
+</beans>
+-------------------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring.xml</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+</web-app>
+------------------------------------------------------------------------------------------------------
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.itcs</groupId>
+	<artifactId>CustomValidationsAnnotaions</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>CustomValidationsAnnotaions Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>2.0.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.4.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf-spring4</artifactId>
+			<version>3.0.7.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>5.0.8.RELEASE</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<finalName>CustomValidationsAnnotaions</finalName>
+	</build>
+</project>
