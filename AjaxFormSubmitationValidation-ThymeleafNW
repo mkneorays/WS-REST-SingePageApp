@@ -1,0 +1,433 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.itcs</groupId>
+  <artifactId>AjaxFormValidation</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>AjaxFormValidation Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+   <!-- Spring MVC Dependency -->
+   <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-webmvc</artifactId>
+     <version>4.3.7.RELEASE</version>
+   </dependency>
+   
+   <!-- Jackson API -->
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-databind</artifactId>
+     <version>2.8.7</version>
+   </dependency>
+   
+   <!-- Hibernate Validator -->
+   <dependency>
+     <groupId>org.hibernate</groupId>
+     <artifactId>hibernate-validator</artifactId>
+     <version>5.4.1.Final</version>
+   </dependency>
+   
+   <!-- JSTL Dependency -->
+   <dependency>
+     <groupId>javax.servlet.jsp.jstl</groupId>
+     <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+     <version>1.2.1</version>
+   </dependency>
+   <dependency>
+     <groupId>taglibs</groupId>
+     <artifactId>standard</artifactId>
+     <version>1.1.2</version>
+   </dependency>
+   
+   <!-- Servlet Dependency -->
+   <dependency>
+     <groupId>javax.servlet</groupId>
+     <artifactId>javax.servlet-api</artifactId>
+     <version>3.1.0</version>
+     <scope>provided</scope>
+   </dependency>
+   
+   <!-- JSP Dependency -->
+   <dependency>
+     <groupId>javax.servlet.jsp</groupId>
+     <artifactId>javax.servlet.jsp-api</artifactId>
+     <version>2.3.1</version>
+     <scope>provided</scope>
+   </dependency>
+</dependencies>
+  <build>
+    <finalName>AjaxFormValidation</finalName>
+  </build>
+</project>
+------------------------------------------------------------------------------------------
+package com.itcs.beans;
+public class User {
+	 
+    String username;
+    String password;
+    String email;
+ 
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+ 
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+ 
+    public String getUsername() {
+        return username;
+    }
+ 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+ 
+    public String getPassword() {
+        return password;
+    }
+ 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+ 
+    public String getEmail() {
+        return email;
+    }
+ 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+}
+----------------------------------------------------------------------------------
+package com.itcs.beans;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+public class LoginForm {
+
+    @NotBlank(message = "username can't empty!")
+    String username;
+
+    @NotBlank(message = "password can't empty!")
+    String password;
+
+    
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public void setPassword(String password) {
+		this.password = password;
+	}
+    
+    public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public String toString() {
+		return "LoginForm [username=" + username + ", password=" + password + "]";
+	}
+    
+    
+}
+-----------------------------------------------------------------------
+package com.itcs.beans;
+
+import java.util.List;
+
+public class AjaxResponseBody {
+
+    String msg;
+    List<User> result;
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public List<User> getResult() {
+        return result;
+    }
+
+    public void setResult(List<User> result) {
+        this.result = result;
+    }
+
+}
+-----------------------------------------------------------------------
+package com.itcs.controller;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.itcs.beans.AjaxResponseBody;
+import com.itcs.beans.LoginForm;
+import com.itcs.beans.User;
+
+/**  //  Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)
+ * @author imssbora
+ */
+@Controller
+public class EmployeeController {
+
+	@Autowired
+	UserService userService;
+	 
+	
+   @RequestMapping("login.htm")
+   public String index() {
+       return "login";
+   }
+
+
+   @RequestMapping(value = "/saveEmployee.htm", produces = { MediaType.APPLICATION_JSON_VALUE })
+   @ResponseBody
+   public ResponseEntity<?> getSearchResultViaAjax(@Valid @RequestBody LoginForm loginForm, Errors errors) {
+	   
+       AjaxResponseBody result = new AjaxResponseBody();
+
+       //If error, just return a 400 bad request, along with the error message
+       if (errors.hasErrors()) {
+
+           result.setMsg(errors.getAllErrors()
+                   .stream().map(x -> x.getDefaultMessage())
+                   .collect(Collectors.joining(",")));
+           return ResponseEntity.badRequest().body(result);
+
+       }
+
+       List<User> users = userService.login(loginForm);
+       if (users.isEmpty()) {
+           result.setMsg("no user found!");
+       } else {
+           result.setMsg("success");
+       }
+       result.setResult(users);
+
+       return ResponseEntity.ok(result);
+
+   }
+}
+-------------------------------------------------------------------------------------------
+package com.itcs.controller;
+
+import org.springframework.stereotype.Service;
+
+import com.itcs.beans.LoginForm;
+import com.itcs.beans.User;
+
+import javax.annotation.PostConstruct;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class UserService {
+
+    private List<User> users;
+
+    public List<User> login(LoginForm loginForm) {
+
+        //do stuffs
+    	//dump user data
+    	User user = new User(loginForm.getUsername(), loginForm.getPassword(), "email@javabycode.com");
+    	
+        return new ArrayList<User>(Arrays.asList(user));
+
+    }
+
+}
+--------------------------------------------------------------------------------------
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ 
+<head>
+    <title>Spring Boot Thymeleaf AJAX example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+ 
+    <link rel="stylesheet" type="text/css"
+          href="webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+</head>
+<body>
+ <script type="text/javascript">
+ $(document).ready(function () {
+	 
+	    $("#login-form").submit(function (event) {
+	 
+	        //stop submit the form event. Do this manually using ajax post function
+	        event.preventDefault();
+	 
+	        var loginForm = {}
+	        loginForm["username"] = $("#username").val();
+	        loginForm["password"] = $("#password").val();
+	 
+	        $("#btn-login").prop("disabled", true);
+	        
+	        $.ajax({
+	            type: "POST",
+	            contentType: "application/json",
+	            url: "/api/login",
+	            data: JSON.stringify(loginForm),
+	            dataType: 'json',
+	            cache: false,
+	            timeout: 600000,
+	            success: function (data) {
+	 
+	                var json = "<h4>Ajax Response</h4><pre>"
+	                    + JSON.stringify(data, null, 4) + "</pre>";
+	                $('#feedback').html(json);
+	 
+	                console.log("SUCCESS : ", data);
+	                $("#btn-login").prop("disabled", false);
+	 
+	            },
+	            error: function (e) {
+	 
+	                var json = "<h4>Ajax Response Error</h4><pre>"
+	                    + e.responseText + "</pre>";
+	                $('#feedback').html(json);
+	 
+	                console.log("ERROR : ", e);
+	                $("#btn-login").prop("disabled", false);
+	 
+	            }
+	        });
+	        
+	    });
+	 
+	});
+ </script>
+<div class="container" style="min-height: 500px">
+ 
+    <div class="starter-template">
+        <h1>Spring Boot Thymeleaf AJAX Example</h1>        
+ 
+        <form class="form-horizontal" id="login-form">
+            <div class="form-group form-group-lg">
+                <label class="col-sm-2 control-label">Username</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" id="username"/>
+                </div>
+            </div>
+ 
+			<div class="form-group form-group-lg">
+                <label class="col-sm-2 control-label">Password</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="password"/>
+                </div>
+            </div>
+ 
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-6">
+                    <button type="submit" id="bth-login"
+                            class="btn btn-primary btn-lg">Login
+                    </button>
+                </div>
+            </div>
+        </form>
+ 
+	<div id="feedback"></div>
+    </div>
+ 
+</div>
+ 
+<script type="text/javascript"
+        src="webjars/jquery/2.2.4/jquery.min.js"></script>
+ 
+<script type="text/javascript" src="js/ajax_functions.js"></script>
+ 
+</body>
+</html>
+------------------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:component-scan base-package="com.itcs" />
+      <mvc:annotation-driven></mvc:annotation-driven>
+      
+     <!--  <bean id="view" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+   <property name="prefix" value="/WEB-INF/view/"/>
+   <property name="suffix" value=".jsp"/>
+   </bean> -->
+   
+   
+	<bean id="templateResolver"
+		class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML5" />
+	</bean>
+ 
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+ 
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+	</bean>
+
+</beans>
+------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring.xml</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+</web-app>
+------------------------------------------------------------------------------------
