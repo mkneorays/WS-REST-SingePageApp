@@ -1,0 +1,315 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.itcs</groupId>
+	<artifactId>AjaxFormValidations</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>AjaxFormValidations Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+   <!-- Spring MVC Dependency -->
+   <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-webmvc</artifactId>
+     <version>4.3.7.RELEASE</version>
+   </dependency>
+   
+   <!-- Jackson API -->
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-databind</artifactId>
+     <version>2.8.7</version>
+   </dependency>
+   
+   <!-- Hibernate Validator -->
+   <dependency>
+     <groupId>org.hibernate</groupId>
+     <artifactId>hibernate-validator</artifactId>
+     <version>5.4.1.Final</version>
+   </dependency>
+   
+   <!-- JSTL Dependency -->
+   <dependency>
+     <groupId>javax.servlet.jsp.jstl</groupId>
+     <artifactId>javax.servlet.jsp.jstl-api</artifactId>
+     <version>1.2.1</version>
+   </dependency>
+   <dependency>
+     <groupId>taglibs</groupId>
+     <artifactId>standard</artifactId>
+     <version>1.1.2</version>
+   </dependency>
+   
+   <!-- Servlet Dependency -->
+   <dependency>
+     <groupId>javax.servlet</groupId>
+     <artifactId>javax.servlet-api</artifactId>
+     <version>3.1.0</version>
+     <scope>provided</scope>
+   </dependency>
+   
+   <!-- JSP Dependency -->
+   <dependency>
+     <groupId>javax.servlet.jsp</groupId>
+     <artifactId>javax.servlet.jsp-api</artifactId>
+     <version>2.3.1</version>
+     <scope>provided</scope>
+   </dependency>
+</dependencies>
+	<build>
+		<finalName>AjaxFormValidations</finalName>
+	</build>
+</project>
+------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring.xml</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+</web-app>
+-----------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:component-scan base-package="com.itcs" />
+      <mvc:annotation-driven></mvc:annotation-driven>
+      
+      <bean id="view" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+   <property name="prefix" value="/WEB-INF/view/"/>
+   <property name="suffix" value=".jsp"/>
+   </bean>
+   
+   
+	<!-- <bean id="templateResolver"
+		class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML5" />
+	</bean>
+ 
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+ 
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+	</bean> -->
+
+</beans>
+---------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<context:component-scan base-package="com.itcs" />
+      <mvc:annotation-driven></mvc:annotation-driven>
+      
+      <bean id="view" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+   <property name="prefix" value="/WEB-INF/view/"/>
+   <property name="suffix" value=".jsp"/>
+   </bean>
+   
+   
+	<!-- <bean id="templateResolver"
+		class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".html" />
+		<property name="templateMode" value="HTML5" />
+	</bean>
+ 
+	<bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolver" ref="templateResolver" />
+	</bean>
+ 
+	<bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+		<property name="templateEngine" ref="templateEngine" />
+	</bean> -->
+
+</beans>
+---------------------------------------------------------------------------------------
+package com.itcs.controller;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.itcs.beans.Employee;
+import com.itcs.beans.EmployeeJsonRespone;
+
+/**  //  Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)
+ * @author imssbora
+ */
+@Controller
+public class EmployeeController {
+
+   @GetMapping("/")
+   public String employeeForm() {
+      return "employeeForm";
+   }  
+
+   @PostMapping(value = "/saveEmployee", produces = { MediaType.APPLICATION_JSON_VALUE })
+   @ResponseBody
+   public EmployeeJsonRespone saveEmployee(@ModelAttribute @Valid Employee employee,
+         BindingResult result) {
+
+      EmployeeJsonRespone respone = new EmployeeJsonRespone();
+      
+      if(result.hasErrors()){
+         
+         //Get error message
+        /* Map<String, String> errors = result.getFieldErrors().stream()
+               .collect(
+                     Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)
+                 );*/
+    	  Map<String, String> errors=result.getFieldErrors().stream().collect(Collectors.toMap(FieldError:: getField, FieldError:: getDefaultMessage));
+         
+         respone.setValidated(false);
+         respone.setErrorMessages(errors);
+      }else{
+         // Implement business logic to save employee into database
+         //..
+         respone.setValidated(true);
+         respone.setEmployee(employee);
+      }
+      return respone;
+   }
+}
+-----------------------------------------------------------------------------------------
+package com.itcs.beans;
+
+import java.util.Map;
+
+public class EmployeeJsonRespone {
+	private Employee employee;
+	private boolean validated;
+	private Map<String, String> errorMessages;
+
+	public Employee getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
+	}
+
+	public boolean isValidated() {
+		return validated;
+	}
+
+	public void setValidated(boolean validated) {
+		this.validated = validated;
+	}
+
+	public Map<String, String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	public void setErrorMessages(Map<String, String> errorMessages) {
+		this.errorMessages = errorMessages;
+	}
+
+	@Override
+	public String toString() {
+		return "EmployeeJsonRespone [employee=" + employee + ", validated=" + validated + ", errorMessages="
+				+ errorMessages + "]";
+	}
+
+}package com.itcs.beans;
+
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
+public class Employee {
+
+	@NotEmpty(message = "Enter first name.")
+	private String firstName;
+
+	@NotEmpty(message = "Enter last name.")
+	private String lastName;
+
+	@Email(message = "Enter a valid email.")
+	private String email;
+
+	@NotEmpty(message = "Enter your designation.")
+	private String designation;
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", designation="
+				+ designation + "]";
+	}
+
+}
+
+  
