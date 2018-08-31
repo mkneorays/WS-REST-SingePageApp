@@ -1,0 +1,26 @@
+function url1(){
+				alert("dynamic url1");
+				var ewn= document.getElementById("eeWksNo1");
+				var esn= document.getElementById("eeSurname1");
+				 var sch= document.getElementById("www1");
+				 sch1 = sch.value;
+				 b=ewn.value;
+				c= esn.value;
+				 alert("a"+sch1+" "+b+" "+c);
+				 $.ajax({  
+					   type: "GET",   
+					   url: "https://localhost:9443/portal/qpc/edit/pension?dept="+b+"&state="+c+"&scheme="+sch1,			 
+					   success: function(response) {
+					     return response;
+					  }});
+				
+			} 
+      
+      @RequestMapping(value = "/qpc/edit/pension" , method = RequestMethod.GET)
+	public String editAssignPensionPage(@RequestParam("dept") String deptName,
+            @RequestParam("state") String stateCode, @RequestParam("scheme") String schemeName) {
+		logger.debug("Entered editAssignPensionPage method...");
+		System.out.println("third controller method"+deptName+" "+stateCode+" "+schemeName);
+		
+		return "/qpc/aps/EditAssignPension1";
+	}
