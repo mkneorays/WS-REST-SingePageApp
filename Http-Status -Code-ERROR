@@ -1,0 +1,31 @@
+HttpResponce-When the web component of web application generates the response to browser then its carries lot of details, they r called SCH
+S-->http responce stsus code(100- 599)
+C-->response content(response body)
+H-->responce header(refresh,content type,contentLength)
+100-199: basic informations
+200-299 : success
+300-399 : redirection
+400-499 : incomplete
+500-599 : server error
+
+1. 404 --> request resource could not found                       (NOT FOUND)
+2. 405 --> request method not supported                           (METHOD NOT ALLOWED)
+3. 401 --> when authentication is failed                          (UNAUTHORIZED)
+4. 403 --> users r not allowed to use this service                (FORBIDDEN)
+5. 400 --> passing invalid input or missing data                  (BAD REQUEST)
+6. 406 --> content not applicable accordinf to header             (NOT ACCEPTABLE)
+      ex-if u  use  @RequestBody n @ResponseBody in controller method at that time u havt to pass client data as json after that in method
+      u will get java obj if u want to show this data to client then u have to convert this java obj into json manually otherwise it will 
+      give 406 error thats all.
+7. 409 -->while executin a rest method if u add duplicate entry    (CONFLICT)
+8. 200 --> success                                                  (OK)
+9. 201 -->                                                          (CREATED)
+10. 204 --> when response body is empty like delete request         (NO CONTENT)
+11. 411 -->
+12. 415 -->
+13. 500 --> server problem
+      
+      
+      
+      
+      
